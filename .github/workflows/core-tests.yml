@@ -1,4 +1,4 @@
-name: Phase 1 Core Tests
+name: WorldForge Core Tests
 
 on:
   pull_request:
@@ -26,5 +26,5 @@ jobs:
       - name: Restore
         run: dotnet restore tests/WorldForge.Core.Tests/WorldForge.Core.Tests.csproj
 
-      - name: Test deterministic simulation core
+      - name: Test deterministic world and living simulation
         run: dotnet test tests/WorldForge.Core.Tests/WorldForge.Core.Tests.csproj --configuration Release --no-restore --logger "console;verbosity=normal"
