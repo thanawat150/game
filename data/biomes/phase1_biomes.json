@@ -1,0 +1,74 @@
+[
+  {
+    "internalId": "deep_ocean",
+    "terrainType": "DeepOcean",
+    "displayName": {
+      "th": "มหาสมุทรลึก",
+      "en": "Deep Ocean"
+    },
+    "color": "#102A56",
+    "movementCost": 999,
+    "fireRisk": 0,
+    "settlementSuitability": 0
+  },
+  {
+    "internalId": "shallow_water",
+    "terrainType": "ShallowWater",
+    "displayName": {
+      "th": "น้ำตื้น",
+      "en": "Shallow Water"
+    },
+    "color": "#236AA0",
+    "movementCost": 8,
+    "fireRisk": 0,
+    "settlementSuitability": 0
+  },
+  {
+    "internalId": "beach",
+    "terrainType": "Beach",
+    "displayName": {
+      "th": "ชายหาด",
+      "en": "Beach"
+    },
+    "color": "#D8C27A",
+    "movementCost": 1.4,
+    "fireRisk": 0.1,
+    "settlementSuitability": 0.45
+  },
+  {
+    "internalId": "grassland",
+    "terrainType": "Grassland",
+    "displayName": {
+      "th": "ทุ่งหญ้า",
+      "en": "Grassland"
+    },
+    "color": "#74A84A",
+    "movementCost": 1,
+    "fireRisk": 0.45,
+    "settlementSuitability": 0.9
+  },
+  {
+    "internalId": "forest",
+    "terrainType": "Forest",
+    "displayName": {
+      "th": "ป่า",
+      "en": "Forest"
+    },
+    "color": "#285A35",
+    "movementCost": 1.8,
+    "fireRisk": 0.65,
+    "settlementSuitability": 0.55
+  },
+  {
+    "internalId": "mountain",
+    "terrainType": "Mountain",
+    "displayName": {
+      "th": "ภูเขา",
+      "en": "Mountain"
+    },
+    "color": "#76777A",
+    "movementCost": 4.5,
+    "fireRisk": 0.05,
+    "settlementSuitability": 0.1
+  }
+]

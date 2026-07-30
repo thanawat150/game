@@ -1,0 +1,10 @@
+{
+  "app.title": "WorldForge: Pixel Gods",
+  "phase.status": "Phase 1: แกนหลักโลก Sandbox",
+  "action.generate": "สร้างโลก",
+  "action.save": "บันทึก",
+  "action.load": "โหลด",
+  "action.pause": "หยุดเวลา",
+  "action.resume": "เล่นต่อ",
+  "action.undo": "ย้อนกลับการแก้ไข"
+}

@@ -1,0 +1,19 @@
+<Project Sdk="Godot.NET.Sdk/4.7.1">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>WorldForge</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="src/WorldForge.Core/WorldForge.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="src/WorldForge.Core/**/*.cs" />
+    <Compile Remove="tests/**/*.cs" />
+  </ItemGroup>
+</Project>
