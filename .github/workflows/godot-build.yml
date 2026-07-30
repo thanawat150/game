@@ -1,4 +1,4 @@
-name: Phase 1 Godot Build
+name: WorldForge Godot Build
 
 on:
   pull_request:
@@ -49,11 +49,11 @@ jobs:
           set -euo pipefail
           "$GODOT_BIN" --headless --path "$GITHUB_WORKSPACE" --build-solutions --quit
 
-      - name: Run headless scene smoke test
+      - name: Run living world headless smoke test
         shell: bash
         run: |
           set -euo pipefail
-          "$GODOT_BIN" --headless --path "$GITHUB_WORKSPACE" --quit-after 5
+          "$GODOT_BIN" --headless --path "$GITHUB_WORKSPACE" --quit-after 8
 
       - name: Install .NET export templates
         shell: bash
@@ -82,7 +82,7 @@ jobs:
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
-          name: WorldForgePixelGods-Windows-Phase1
+          name: WorldForgePixelGods-Windows-LivingWorld
           path: builds/windows/
           if-no-files-found: error
           retention-days: 14
