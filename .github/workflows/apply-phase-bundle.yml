@@ -48,3 +48,5 @@ jobs:
           fi
           git commit -m "Implement phases 2-7 living world simulation"
           git push origin "HEAD:${GITHUB_REF_NAME}"
+
+# Bootstrap retrigger after pull request creation.
