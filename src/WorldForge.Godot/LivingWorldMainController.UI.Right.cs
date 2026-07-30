@@ -54,7 +54,7 @@ public sealed partial class LivingWorldMainController : Node2D
         foreach (Control control in new Control[] { _cityPriority, _cityBorder, _cityTax, _cityBirth, _cityFoodReserve, _cityPopulationLimit, _cityAutoBuild, _cityQuarantine, _cityEvacuate })
         {
             if (control is OptionButton option) option.ItemSelected += _ => ApplySelectedCityPolicy();
-            else if (control is Range range) range.ValueChanged += _ => ApplySelectedCityPolicy();
+            else if (control is Godot.Range range) range.ValueChanged += _ => ApplySelectedCityPolicy();
             else if (control is BaseButton button) button.Toggled += _ => ApplySelectedCityPolicy();
         }
         var cityActions = new HBoxContainer();
@@ -75,7 +75,7 @@ public sealed partial class LivingWorldMainController : Node2D
         foreach (Control control in new Control[] { _kingdomBorder, _kingdomTax, _kingdomBirth, _kingdomMilitary, _kingdomPopulationLimit, _kingdomPreferPeace })
         {
             if (control is OptionButton option) option.ItemSelected += _ => ApplySelectedKingdomPolicy();
-            else if (control is Range range) range.ValueChanged += _ => ApplySelectedKingdomPolicy();
+            else if (control is Godot.Range range) range.ValueChanged += _ => ApplySelectedKingdomPolicy();
             else if (control is BaseButton button) button.Toggled += _ => ApplySelectedKingdomPolicy();
         }
 
@@ -89,42 +89,4 @@ public sealed partial class LivingWorldMainController : Node2D
             _director?.SelectScenario((ScenarioKind)(int)id);
             UpdateScenario();
         };
-        root.AddChild(_scenarioSelector);
-        _scenarioLabel = new Label { AutowrapMode = TextServer.AutowrapMode.WordSmart };
-        root.AddChild(_scenarioLabel);
-        _scenarioProgress = new ProgressBar { MinValue = 0, MaxValue = 100, Value = 0, ShowPercentage = true };
-        root.AddChild(_scenarioProgress);
-
-        _eventPanel = new PanelContainer();
-        root.AddChild(_eventPanel);
-        var eventRoot = new VBoxContainer();
-        _eventPanel.AddChild(eventRoot);
-        _eventTitle = new Label { Text = "à¹€à¸«à¸•à¸¸à¸à¸²à¸£à¸“à¹Œà¹‚à¸¥à¸" };
-        _eventDescription = new Label { AutowrapMode = TextServer.AutowrapMode.WordSmart };
-        eventRoot.AddChild(_eventTitle);
-        eventRoot.AddChild(_eventDescription);
-        for (int i = 0; i < _eventChoiceButtons.Length; i++)
-        {
-            int choice = i;
-            _eventChoiceButtons[i] = CreateButton($"à¸—à¸²à¸‡à¹€à¸¥à¸·à¸­à¸ {i + 1}", () => ResolveEvent(choice));
-            eventRoot.AddChild(_eventChoiceButtons[i]);
-        }
-        _eventPanel.Visible = false;
-
-        root.AddChild(new HSeparator());
-        root.AddChild(Section("Chronicle"));
-        var filterRow = new HBoxContainer();
-        _chronicleFilter = new OptionButton();
-        foreach (ChronicleFilter filter in Enum.GetValues<ChronicleFilter>())
-            _chronicleFilter.AddItem(FilterThai(filter), (int)filter);
-        _chronicleFilter.ItemSelected += _ => RebuildChronicle();
-        filterRow.AddChild(_chronicleFilter);
-        _chronicleSearch = new LineEdit { PlaceholderText = "à¸à¸£à¸­à¸‡à¹€à¸«à¸•à¸¸à¸à¸²à¸£à¸“à¹Œ", SizeFlagsHorizontal = Control.SizeFlags.ExpandFill };
-        _chronicleSearch.TextChanged += _ => RebuildChronicle();
-        filterRow.AddChild(_chronicleSearch);
-        root.AddChild(filterRow);
-        _chronicleList = new ItemList { CustomMinimumSize = new Vector2(360, 230), SelectMode = ItemList.SelectModeEnum.Single };
-        _chronicleList.ItemSelected += index => FocusChronicle((int)index);
-        root.AddChild(_chronicleList);
-    }
-}
+        root.AddChild(_scenarioSelector"“°¢÷66Væ&–ôÆ&VÂÒæWrÆ&VÂ²WF÷w&ÖöFRÒFW‡E6W'fW"äWF÷w&ÖöFRåv÷&E6Ö'BÓ°¢&ö÷BäFD6†–ÆB…÷66Væ&–ôÆ&VÂ“°¢÷66Væ&–õ&öw&W72ÒæWr&öw&W74&"²Ö–åfÇVRÒÂÖ…fÇVRÒÂfÇVRÒÂ6†÷uW&6VçFvRÒG'VRÓ°¢&ö÷BäFD6†–ÆB…÷66Væ&–õ&öw&W72“° ¢öWfVçEæVÂÒæWræVÄ6öçF–æW"‚“°¢&ö÷BäFD6†–ÆB…öWfVçEæVÂ“°¢f"WfVçE&ö÷BÒæWrd&÷„6öçF–æW"‚“°¢öWfVçEæVÂäFD6†–ÆB†WfVçE&ö÷B“°¢öWfVçEF—FÆRÒæWrÆ&VÂ²FW‡BÒ.˜Š¾‰^‹ˆ‹.Š>‰>˜Â"Ó°¢öWfVçDFW67&—F–öâÒæWrÆ&VÂ²WF÷w&ÖöFRÒFW‡E6W'fW"äWF÷w&ÖöFRåv÷&E6Ö'BÓ°¢WfVçE&ö÷BäFD6†–ÆB…öWfVçEF—FÆR“°¢WfVçE&ö÷BäFD6†–ÆB…öWfVçDFW67&—F–öâ“°¢f÷"†–çB’Ò²’ÂöWfVçD6†ö–6T'WGFöç2äÆVæwFƒ²’²²¢°¢–çB6†ö–6RÒ“°¢öWfVçD6†ö–6T'WGFöç5¶•ÒÒ7&VFT'WGFöâ‚B.‰~‹.ˆ~˜Š^‹~ŠŞˆ¶’²Ò"Â‚’Óâ&W6öÇfTWfVçB†6†ö–6R’“°¢WfVçE&ö÷BäFD6†–ÆB…öWfVçD6†ö–6T'WGFöç5¶•Ò“°¢Ğ¢öWfVçEæVÂåf—6–&ÆRÒfÇ6S° ¢&ö÷BäFD6†–ÆB†æWr…6W&F÷"‚’“°¢&ö÷BäFD6†–ÆB…6V7F–öâ‚$6‡&öæ–6ÆR"’“°¢f"f–ÇFW%&÷rÒæWr„&÷„6öçF–æW"‚“°¢ö6‡&öæ–6ÆTf–ÇFW"ÒæWr÷F–öä'WGFöâ‚“°¢f÷&V6‚„6‡&öæ–6ÆTf–ÇFW"f–ÇFW"–âVçVÒävWEfÇVW3Ä6‡&öæ–6ÆTf–ÇFW#â‚’¢ö6‡&öæ–6ÆTf–ÇFW"äFD—FVÒ„f–ÇFW%F†’†f–ÇFW"’Â†–çB–f–ÇFW"“°¢ö6‡&öæ–6ÆTf–ÇFW"ä—FVÕ6VÆV7FVB³ÒòÓâ&V'V–ÆD6‡&öæ–6ÆR‚“°¢f–ÇFW%&÷räFD6†–ÆB…ö6‡&öæ–6ÆTf–ÇFW"“°¢ö6‡&öæ–6ÆU6V&6‚ÒæWrÆ–æTVF—B²Æ6V†öÆFW%FW‡BÒ.ˆŠ>ŠŞˆr˜Š¾‰^‹ˆ‹.Š>‰>˜Â"Â6—¦TfÆw4†÷&—¦öçFÂÒ6öçG&öÂå6—¦TfÆw2äW‡æDf–ÆÂÓ°¢ö6‡&öæ–6ÆU6V&6‚åFW‡D6†ævVB³ÒòÓâ&V'V–ÆD6‡&öæ–6ÆR‚“°¢f–ÇFW%&÷räFD6†–ÆB…ö6‡&öæ–6ÆU6V&6‚“°¢&ö÷BäFD6†–ÆB†f–ÇFW%&÷r“°¢ö6‡&öæ–6ÆTÆ—7BÒæWr—FVÔÆ—7B²7W7FöÔÖ–æ–×VÕ6—¦RÒæWrfV7F÷#"ƒ3cÂ#3’Â6VÆV7DÖöFRÒ—FVÔÆ—7Bå6VÆV7DÖöFTVçVÒå6–ævÆRÓ°¢ö6‡&öæ–6ÆTÆ—7Bä—FVÕ6VÆV7FVB³Ò–æFW‚Óâfö7W46‡&öæ–6ÆR‚†–çB––æFW‚“°¢&ö÷BäFD6†–ÆB…ö6‡&öæ–6ÆTÆ—7B“°¢Ğ §Ğ
