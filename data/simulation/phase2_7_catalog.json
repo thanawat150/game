@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "species": [
+    { "internal_id": "species.grazer", "display_name": { "en": "Grazer", "th": "สัตว์กินพืช" }, "kind": "Grazer" },
+    { "internal_id": "species.predator", "display_name": { "en": "Predator", "th": "สัตว์นักล่า" }, "kind": "Predator" },
+    { "internal_id": "species.settler", "display_name": { "en": "Settler", "th": "ผู้ตั้งถิ่นฐาน" }, "kind": "Settler" },
+    { "internal_id": "species.monster", "display_name": { "en": "Monster", "th": "สัตว์ประหลาด" }, "kind": "Monster" },
+    { "internal_id": "species.fish", "display_name": { "en": "Fish", "th": "ปลา" }, "kind": "Fish" }
+  ],
+  "traits": [
+    { "internal_id": "trait.strong", "health_bonus": 20, "heritable": true },
+    { "internal_id": "trait.swift", "speed_bonus": 2, "heritable": true },
+    { "internal_id": "trait.clever", "intelligence_bonus": 5, "heritable": true },
+    { "internal_id": "trait.fertile", "fertility_bonus": 0.02, "heritable": true },
+    { "internal_id": "trait.blessed", "health_bonus": 10, "heritable": false },
+    { "internal_id": "trait.cursed", "health_bonus": -15, "heritable": false }
+  ],
+  "buildings": [
+    { "internal_id": "building.campfire", "wood": 0, "population_required": 0 },
+    { "internal_id": "building.house", "wood": 10, "housing": 8 },
+    { "internal_id": "building.farm", "wood": 8, "food_output": 20, "population_required": 10 },
+    { "internal_id": "building.market", "wood": 12, "stone": 5, "population_required": 20 }
+  ],
+  "technologies": [
+    "tech.agriculture",
+    "tech.construction",
+    "tech.medicine",
+    "tech.trade",
+    "tech.metallurgy",
+    "tech.navigation"
+  ],
+  "powers": [
+    "CreateForest",
+    "Knowledge",
+    "Peace",
+    "Lightning",
+    "Plague",
+    "Meteor",
+    "Blessing",
+    "Curse"
+  ],
+  "world_ages": [
+    "Dawn",
+    "Growth",
+    "Kingdoms",
+    "Conflict",
+    "Ash",
+    "Frost",
+    "Wonders",
+    "Silence"
+  ]
+}
