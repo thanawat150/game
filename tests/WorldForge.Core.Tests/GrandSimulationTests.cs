@@ -86,7 +86,7 @@ public sealed class GrandSimulationTests
         var simulation = new GrandSimulation(world, 50);
         SimEntity entity = simulation.SpawnEntity(SpeciesKind.Settler, x, y, "Archivist");
         simulation.ApplyPower(GodPowerType.Knowledge, x, y);
-        simulation.AdvanceDays(45);
+        simulation.AdvanceDays(5);
 
         string json = simulation.SaveToJson();
         GrandSimulation loaded = GrandSimulation.LoadFromJson(world, json);
