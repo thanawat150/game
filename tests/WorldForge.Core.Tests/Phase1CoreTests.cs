@@ -1,3 +1,4 @@
+using Xunit;
 using WorldForge.Core.Editing;
 using WorldForge.Core.Persistence;
 using WorldForge.Core.Simulation;
