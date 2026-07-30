@@ -26,6 +26,9 @@ jobs:
         with:
           dotnet-version: "8.0.x"
 
+      - name: Compile Godot C# project with diagnostics
+        run: dotnet build WorldForge.csproj --configuration Release --verbosity normal
+
       - name: Download Godot .NET editor
         shell: bash
         run: |
