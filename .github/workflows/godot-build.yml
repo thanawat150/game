@@ -1,0 +1,88 @@
+name: Phase 1 Godot Build
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - "agent/**"
+
+permissions:
+  contents: read
+
+jobs:
+  build-godot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GODOT_VERSION: "4.7.1"
+      GODOT_STATUS: "stable"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Download Godot .NET editor
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 \
+            "https://godot-releases.nbg1.your-objectstorage.com/${GODOT_VERSION}-${GODOT_STATUS}/Godot_v${GODOT_VERSION}-${GODOT_STATUS}_mono_linux_x86_64.zip" \
+            --output godot-dotnet.zip
+          unzip -q godot-dotnet.zip -d .godot-editor
+          GODOT_BIN="$(find .godot-editor -type f -name 'Godot_v*-mono_linux*.x86_64' -o -name 'Godot_v*_mono_linux*.x86_64' | head -n 1)"
+          if [ -z "$GODOT_BIN" ]; then
+            echo "Godot executable was not found after extraction."
+            find .godot-editor -maxdepth 3 -type f -print
+            exit 1
+          fi
+          chmod +x "$GODOT_BIN"
+          echo "GODOT_BIN=$GITHUB_WORKSPACE/$GODOT_BIN" >> "$GITHUB_ENV"
+
+      - name: Build Godot C# solution
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$GODOT_BIN" --headless --path "$GITHUB_WORKSPACE" --build-solutions --quit
+
+      - name: Run headless scene smoke test
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$GODOT_BIN" --headless --path "$GITHUB_WORKSPACE" --quit-after 5
+
+      - name: Install .NET export templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 \
+            "https://godot-releases.nbg1.your-objectstorage.com/${GODOT_VERSION}-${GODOT_STATUS}/Godot_v${GODOT_VERSION}-${GODOT_STATUS}_mono_export_templates.tpz" \
+            --output godot-templates.tpz
+          rm -rf .godot-templates
+          mkdir -p .godot-templates
+          unzip -q godot-templates.tpz -d .godot-templates
+          TEMPLATE_DIR="$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_STATUS}.mono"
+          mkdir -p "$TEMPLATE_DIR"
+          cp -R .godot-templates/templates/. "$TEMPLATE_DIR/"
+
+      - name: Export Windows desktop build
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p builds/windows
+          "$GODOT_BIN" --headless --path "$GITHUB_WORKSPACE" \
+            --export-release "Windows Desktop" \
+            "$GITHUB_WORKSPACE/builds/windows/WorldForgePixelGods.exe"
+          test -f builds/windows/WorldForgePixelGods.exe
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: WorldForgePixelGods-Windows-Phase1
+          path: builds/windows/
+          if-no-files-found: error
+          retention-days: 14

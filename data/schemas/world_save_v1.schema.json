@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "worldforge.world_save_v1",
+  "title": "WorldForge Phase 1 Save",
+  "type": "object",
+  "required": [
+    "header",
+    "world"
+  ],
+  "properties": {
+    "header": {
+      "type": "object",
+      "required": [
+        "magic",
+        "schemaVersion",
+        "generatorVersion"
+      ],
+      "properties": {
+        "magic": {
+          "const": "WFG_SAVE"
+        },
+        "schemaVersion": {
+          "const": 1
+        },
+        "generatorVersion": {
+          "type": "string"
+        },
+        "createdUtc": {
+          "type": "string"
+        }
+      }
+    },
+    "world": {
+      "type": "object",
+      "required": [
+        "config",
+        "simulationTick",
+        "timeScale",
+        "checksum",
+        "terrainEdits"
+      ],
+      "properties": {
+        "simulationTick": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "timeScale": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 64
+        },
+        "checksum": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64
+        },
+        "terrainEdits": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "index",
+              "terrain"
+            ],
+            "properties": {
+              "index": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "terrain": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

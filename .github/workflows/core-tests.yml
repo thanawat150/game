@@ -1,0 +1,30 @@
+name: Phase 1 Core Tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - "agent/**"
+
+permissions:
+  contents: read
+
+jobs:
+  test-core:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore
+        run: dotnet restore tests/WorldForge.Core.Tests/WorldForge.Core.Tests.csproj
+
+      - name: Test deterministic simulation core
+        run: dotnet test tests/WorldForge.Core.Tests/WorldForge.Core.Tests.csproj --configuration Release --no-restore --logger "console;verbosity=normal"
