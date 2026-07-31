@@ -1,0 +1,69 @@
+{
+  "version": 5,
+  "crops": {
+    "water_spinach": {"name_key":"crop.water_spinach","growth_days":4,"ideal_water":72,"water_tolerance":22,"ideal_light":75,"ideal_temperature":30,"ideal_ph":6.3,"nutrients":{"n":65,"p":45,"k":50},"harvest_min":2,"harvest_max":5,"sell_price":18,"season_bonus":[0,1],"pest_risk":0.15,"disease_risk":0.12,"color":"78b85a"},
+    "kale": {"name_key":"crop.kale","growth_days":6,"ideal_water":62,"water_tolerance":18,"ideal_light":72,"ideal_temperature":25,"ideal_ph":6.5,"nutrients":{"n":75,"p":55,"k":60},"harvest_min":2,"harvest_max":4,"sell_price":28,"season_bonus":[1,2],"pest_risk":0.22,"disease_risk":0.15,"color":"4f8748"},
+    "chili": {"name_key":"crop.chili","growth_days":8,"ideal_water":58,"water_tolerance":15,"ideal_light":85,"ideal_temperature":29,"ideal_ph":6.2,"nutrients":{"n":55,"p":65,"k":78},"harvest_min":3,"harvest_max":7,"sell_price":42,"season_bonus":[0,3],"pest_risk":0.26,"disease_risk":0.20,"color":"d75a45"},
+    "tomato": {"name_key":"crop.tomato","growth_days":9,"ideal_water":65,"water_tolerance":14,"ideal_light":82,"ideal_temperature":27,"ideal_ph":6.4,"nutrients":{"n":60,"p":72,"k":82},"harvest_min":2,"harvest_max":6,"sell_price":38,"season_bonus":[0,1],"pest_risk":0.30,"disease_risk":0.28,"color":"c65a4b"},
+    "cucumber": {"name_key":"crop.cucumber","growth_days":7,"ideal_water":70,"water_tolerance":17,"ideal_light":78,"ideal_temperature":28,"ideal_ph":6.5,"nutrients":{"n":62,"p":60,"k":70},"harvest_min":2,"harvest_max":5,"sell_price":32,"season_bonus":[0,1],"pest_risk":0.24,"disease_risk":0.18,"color":"8abf5b"}
+  },
+  "weather": {
+    "clear":{"name_key":"weather.clear","rain":0,"evaporation":5,"light":100,"temperature":30,"humidity":55,"disease":0.0,"pest":0.06},
+    "cloudy":{"name_key":"weather.cloudy","rain":0,"evaporation":3,"light":72,"temperature":27,"humidity":68,"disease":0.03,"pest":0.04},
+    "light_rain":{"name_key":"weather.light_rain","rain":18,"evaporation":1,"light":55,"temperature":25,"humidity":82,"disease":0.08,"pest":0.02},
+    "heavy_rain":{"name_key":"weather.heavy_rain","rain":34,"evaporation":0,"light":38,"temperature":24,"humidity":94,"disease":0.16,"pest":0.01},
+    "windy":{"name_key":"weather.windy","rain":0,"evaporation":8,"light":85,"temperature":28,"humidity":48,"disease":0.0,"pest":0.03},
+    "hot":{"name_key":"weather.hot","rain":0,"evaporation":11,"light":100,"temperature":36,"humidity":40,"disease":0.0,"pest":0.08},
+    "cool":{"name_key":"weather.cool","rain":0,"evaporation":2,"light":75,"temperature":20,"humidity":62,"disease":0.03,"pest":0.01},
+    "storm":{"name_key":"weather.storm","rain":48,"evaporation":0,"light":24,"temperature":23,"humidity":98,"disease":0.22,"pest":0.0},
+    "fog":{"name_key":"weather.fog","rain":2,"evaporation":1,"light":42,"temperature":22,"humidity":96,"disease":0.14,"pest":0.01}
+  },
+  "seasons":["season.hot","season.rainy","season.cool","season.transition"],
+  "pests": {
+    "aphid":{"name_key":"pest.aphid","damage":5,"icon":0},
+    "caterpillar":{"name_key":"pest.caterpillar","damage":8,"icon":1},
+    "snail":{"name_key":"pest.snail","damage":7,"icon":2},
+    "whitefly":{"name_key":"pest.whitefly","damage":6,"icon":3}
+  },
+  "beneficial": {
+    "ladybug":{"name_key":"beneficial.ladybug","control":7,"icon":4},
+    "bee":{"name_key":"beneficial.bee","pollination":8,"icon":5},
+    "butterfly":{"name_key":"beneficial.butterfly","pollination":5,"icon":6},
+    "earthworm":{"name_key":"beneficial.earthworm","fertility":5,"icon":7},
+    "frog":{"name_key":"beneficial.frog","control":6,"icon":8},
+    "bird":{"name_key":"beneficial.bird","control":4,"icon":9}
+  },
+  "quests":[
+    {"id":"q1","title_key":"quest.1.title","steps":["event.till","event.plant","event.water","event.sprout"],"reward_money":80,"reward_knowledge":20},
+    {"id":"q2","title_key":"quest.2.title","steps":["event.inspect_dry","event.inspect_moist","event.inspect_wet"],"reward_money":100,"reward_knowledge":25},
+    {"id":"q3","title_key":"quest.3.title","steps":["event.plant_close","event.inspect_spacing","event.harvest"],"reward_money":120,"reward_knowledge":30},
+    {"id":"q4","title_key":"quest.4.title","steps":["event.find_pest","event.find_beneficial","event.bio_control"],"reward_money":140,"reward_knowledge":35},
+    {"id":"q5","title_key":"quest.5.title","steps":["event.add_waste","event.make_compost","event.use_compost"],"reward_money":160,"reward_knowledge":40},
+    {"id":"q6","title_key":"quest.6.title","steps":["event.measure_ph","event.measure_npk","event.restore_soil"],"reward_money":180,"reward_knowledge":45},
+    {"id":"q7","title_key":"quest.7.title","steps":["event.check_season","event.plant_season","event.season_harvest"],"reward_money":220,"reward_knowledge":50}
+  ],
+  "lessons":[
+    {"id":"water","title_key":"lesson.water","unlock":"event.inspect_dry"},
+    {"id":"drainage","title_key":"lesson.drainage","unlock":"event.inspect_wet"},
+    {"id":"spacing","title_key":"lesson.spacing","unlock":"event.inspect_spacing"},
+    {"id":"pests","title_key":"lesson.pests","unlock":"event.find_pest"},
+    {"id":"beneficial","title_key":"lesson.beneficial","unlock":"event.find_beneficial"},
+    {"id":"compost","title_key":"lesson.compost","unlock":"event.make_compost"},
+    {"id":"soil_health","title_key":"lesson.soil","unlock":"event.measure_ph"},
+    {"id":"seasons","title_key":"lesson.seasons","unlock":"event.check_season"},
+    {"id":"experiments","title_key":"lesson.experiments","unlock":"event.run_experiment"},
+    {"id":"economy","title_key":"lesson.economy","unlock":"event.sell"}
+  ],
+  "shop":[
+    {"id":"seed_water_spinach","name_key":"item.seed.water_spinach","price":12,"amount":3},
+    {"id":"seed_kale","name_key":"item.seed.kale","price":18,"amount":3},
+    {"id":"seed_chili","name_key":"item.seed.chili","price":25,"amount":3},
+    {"id":"seed_tomato","name_key":"item.seed.tomato","price":24,"amount":3},
+    {"id":"seed_cucumber","name_key":"item.seed.cucumber","price":22,"amount":3},
+    {"id":"compost","name_key":"item.compost","price":30,"amount":2},
+    {"id":"organic_fertilizer","name_key":"item.organic_fertilizer","price":45,"amount":2},
+    {"id":"bio_spray","name_key":"item.bio_spray","price":55,"amount":2},
+    {"id":"moisture_meter","name_key":"item.moisture_meter","price":120,"amount":1},
+    {"id":"ph_meter","name_key":"item.ph_meter","price":180,"amount":1}
+  ]
+}
