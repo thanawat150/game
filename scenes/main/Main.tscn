@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://src/WorldForge.Godot/LivingWorldMainController.cs" id="1_main"]
 [ext_resource type="Script" path="res://src/WorldForge.Godot/ExpansionHeadlessSmokeRunner.cs" id="2_smoke"]
 [ext_resource type="Script" path="res://src/WorldForge.Godot/ExpansionModEditorOverlay.cs" id="3_mod"]
+[ext_resource type="Script" path="res://src/WorldForge.Godot/ReleaseCandidateBootstrap.cs" id="4_release"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
@@ -12,3 +13,6 @@ script = ExtResource("2_smoke")
 
 [node name="ExpansionModEditorOverlay" type="Node" parent="."]
 script = ExtResource("3_mod")
+
+[node name="ReleaseCandidateBootstrap" type="Node" parent="."]
+script = ExtResource("4_release")
