@@ -170,30 +170,30 @@ func build_regions() -> void:
 	for building_index: int in range(8):
 		building_textures.append(region(building_index * 128, 864, 128, 128))
 
-func translate(key_name: String) -> String:
+func tx(key_name: String) -> String:
 	return String(locale_data.get(key_name, key_name))
 
 func switch_language() -> void:
 	language = "en" if language == "th" else "th"
 	locale_data = load_json("res://localization/%s.json" % language)
 	build_buttons()
-	notify(translate("access.language") + ": " + language.to_upper(), "success")
+	notify(tx("access.language") + ": " + language.to_upper(), "success")
 
 func crop_name(crop_id: String) -> String:
 	var crops: Dictionary = dictionary_value(data, "crops")
 	var crop_def: Dictionary = dictionary_value(crops, crop_id)
-	return translate(string_value(crop_def, "name_key", crop_id))
+	return tx(string_value(crop_def, "name_key", crop_id))
 
 func weather_name(weather_id: String) -> String:
 	var weather_data: Dictionary = dictionary_value(data, "weather")
 	var weather_def: Dictionary = dictionary_value(weather_data, weather_id)
-	return translate(string_value(weather_def, "name_key", weather_id))
+	return tx(string_value(weather_def, "name_key", weather_id))
 
 func season_name(index: int) -> String:
 	var seasons: Array = array_value(data, "seasons")
 	if seasons.is_empty():
 		return ""
-	return translate(String(seasons[clampi(index, 0, seasons.size() - 1)]))
+	return tx(String(seasons[clampi(index, 0, seasons.size() - 1)]))
 
 func new_game() -> void:
 	tiles.clear()
@@ -240,7 +240,7 @@ func new_game() -> void:
 	mode = "menu"
 	rng.seed = 20260731
 	build_buttons()
-	notify(translate("quest.1.title"), "success")
+	notify(tx("quest.1.title"), "success")
 
 func build_buttons() -> void:
 	buttons = [
@@ -480,12 +480,12 @@ func apply_tool(cell: Vector2i) -> void:
 	var key_string: String = tile_key(cell)
 	var tile: Dictionary = dictionary_value(tiles, key_string)
 	if not bool(tile.get("farm", false)):
-		notify(translate("msg.tile_not_farm"), "error")
+		notify(tx("msg.tile_not_farm"), "error")
 		return
 	match selected_tool:
 		"hoe":
 			if not string_value(tile, "crop").is_empty():
-				notify(translate("msg.crop_exists"), "error")
+				notify(tx("msg.crop_exists"), "error")
 				return
 			tile["tilled"] = true
 			tile["moisture"] = minf(float_value(tile, "moisture"), 35.0)
@@ -494,7 +494,7 @@ func apply_tool(cell: Vector2i) -> void:
 			play_sound("hoe")
 		"water":
 			if not bool(tile.get("tilled", false)):
-				notify(translate("msg.till_first"), "error")
+				notify(tx("msg.till_first"), "error")
 				return
 			tile["moisture"] = minf(100.0, float_value(tile, "moisture") + 34.0)
 			tile["water_total"] = float_value(tile, "water_total") + 34.0
@@ -505,11 +505,11 @@ func apply_tool(cell: Vector2i) -> void:
 			play_sound("water")
 		"seed":
 			if not bool(tile.get("tilled", false)) or not string_value(tile, "crop").is_empty():
-				notify(translate("msg.till_first"), "error")
+				notify(tx("msg.till_first"), "error")
 				return
 			var item_id: String = "seed_" + selected_seed
 			if int(inventory.get(item_id, 0)) <= 0:
-				notify(translate("msg.seed_empty"), "error")
+				notify(tx("msg.seed_empty"), "error")
 				return
 			inventory[item_id] = int(inventory.get(item_id, 0)) - 1
 			tile["crop"] = selected_seed
@@ -528,7 +528,7 @@ func apply_tool(cell: Vector2i) -> void:
 			play_sound("plant")
 		"fertilize":
 			if int(inventory.get("organic_fertilizer", 0)) <= 0:
-				notify(translate("msg.seed_empty"), "error")
+				notify(tx("msg.seed_empty"), "error")
 				return
 			inventory["organic_fertilizer"] = int(inventory.get("organic_fertilizer", 0)) - 1
 			tile["fertility"] = minf(100.0, float_value(tile, "fertility") + 24.0)
@@ -549,7 +549,7 @@ func apply_tool(cell: Vector2i) -> void:
 			knowledge += 1
 		"bio":
 			if int(inventory.get("bio_spray", 0)) <= 0:
-				notify(translate("msg.seed_empty"), "error")
+				notify(tx("msg.seed_empty"), "error")
 				return
 			inventory["bio_spray"] = int(inventory.get("bio_spray", 0)) - 1
 			tile["pest"] = maxf(0.0, float_value(tile, "pest") - 55.0)
@@ -558,7 +558,7 @@ func apply_tool(cell: Vector2i) -> void:
 			record_event("event.bio_control")
 		"compost":
 			if int(inventory.get("compost", 0)) <= 0:
-				notify(translate("msg.seed_empty"), "error")
+				notify(tx("msg.seed_empty"), "error")
 				return
 			inventory["compost"] = int(inventory.get("compost", 0)) - 1
 			tile["fertility"] = minf(100.0, float_value(tile, "fertility") + 30.0)
@@ -580,7 +580,7 @@ func apply_tool(cell: Vector2i) -> void:
 func harvest_tile(tile: Dictionary, key_string: String) -> void:
 	var crop_id: String = string_value(tile, "crop")
 	if crop_id.is_empty() or int_value(tile, "stage") < 5 or bool(tile.get("dead", false)):
-		notify(translate("msg.not_ready"), "error")
+		notify(tx("msg.not_ready"), "error")
 		return
 	var crops: Dictionary = dictionary_value(data, "crops")
 	var crop_def: Dictionary = dictionary_value(crops, crop_id)
@@ -608,7 +608,7 @@ func harvest_tile(tile: Dictionary, key_string: String) -> void:
 	tile["dead"] = false
 	tile["moisture"] = maxf(12.0, float_value(tile, "moisture") - 18.0)
 	tiles[key_string] = tile
-	notify("%s: %d | %s %d" % [translate("msg.harvested"), amount, translate("lab.quality"), quality], "harvest")
+	notify("%s: %d | %s %d" % [tx("msg.harvested"), amount, tx("lab.quality"), quality], "harvest")
 	play_sound("harvest")
 
 func inspect_tile(cell: Vector2i) -> void:
@@ -642,7 +642,7 @@ func record_event(event_id: String) -> void:
 			knowledge += int_value(quest, "reward_knowledge")
 			quest_index += 1
 			quest_step = 0
-			notify(translate("msg.quest_done"), "success")
+			notify(tx("msg.quest_done"), "success")
 			play_sound("success")
 
 func unlock_lessons(event_id: String) -> void:
@@ -683,9 +683,9 @@ func diagnosis_click(position: Vector2) -> void:
 			diagnosis_choice = SYMPTOMS[index]
 			if diagnosis_choice == diagnosis_actual:
 				knowledge += 5
-				notify(translate("msg.correct"), "success")
+				notify(tx("msg.correct"), "success")
 			else:
-				notify(translate("msg.wrong"), "error")
+				notify(tx("msg.wrong"), "error")
 			return
 
 func shop_click(position: Vector2) -> void:
@@ -699,14 +699,14 @@ func shop_click(position: Vector2) -> void:
 func buy_item(item: Dictionary) -> void:
 	var price: int = int_value(item, "price")
 	if money < price:
-		notify(translate("msg.no_money"), "error")
+		notify(tx("msg.no_money"), "error")
 		return
 	var item_id: String = string_value(item, "id")
 	var amount: int = int_value(item, "amount", 1)
 	money -= price
 	expenses += price
 	inventory[item_id] = int(inventory.get(item_id, 0)) + amount
-	notify(translate("msg.bought"), "shop")
+	notify(tx("msg.bought"), "shop")
 
 func market_click(position: Vector2) -> void:
 	for index: int in range(CROP_IDS.size()):
@@ -719,7 +719,7 @@ func sell_crop(crop_id: String) -> void:
 	var produce_id: String = "produce_" + crop_id
 	var amount: int = int(inventory.get(produce_id, 0))
 	if amount <= 0:
-		notify(translate("msg.no_produce"), "error")
+		notify(tx("msg.no_produce"), "error")
 		return
 	var crops: Dictionary = dictionary_value(data, "crops")
 	var crop_def: Dictionary = dictionary_value(crops, crop_id)
@@ -732,7 +732,7 @@ func sell_crop(crop_id: String) -> void:
 	money += total
 	revenue += total
 	record_event("event.sell")
-	notify("%s +%d" % [translate("msg.sold"), total], "shop")
+	notify("%s +%d" % [tx("msg.sold"), total], "shop")
 
 func lab_click(position: Vector2) -> void:
 	if Rect2(360, 195, 50, 36).has_point(position):
@@ -744,7 +744,7 @@ func lab_click(position: Vector2) -> void:
 		var crop_def: Dictionary = dictionary_value(crops, selected_lab_crop)
 		experiment_results = GrowWiseSimulation.run_experiment(crop_def)
 		record_event("event.run_experiment")
-		notify(translate("msg.experiment_done"), "success")
+		notify(tx("msg.experiment_done"), "success")
 
 func cycle_lab_crop(direction: int) -> void:
 	var index: int = CROP_IDS.find(selected_lab_crop)
@@ -786,7 +786,7 @@ func save_game(slot_number: int, automatic: bool) -> bool:
 	file.store_string(JSON.stringify(payload))
 	file.close()
 	if not automatic:
-		notify(translate("msg.saved"), "success")
+		notify(tx("msg.saved"), "success")
 	return true
 
 func load_game(slot_number: int) -> bool:
@@ -795,7 +795,7 @@ func load_game(slot_number: int) -> bool:
 	if payload.is_empty():
 		payload = read_save(path + ".bak")
 	if payload.is_empty():
-		notify(translate("msg.no_save"), "error")
+		notify(tx("msg.no_save"), "error")
 		return false
 	language = string_value(payload, "language", "th")
 	locale_data = load_json("res://localization/%s.json" % language)
@@ -828,7 +828,7 @@ func load_game(slot_number: int) -> bool:
 	experiment_results = dictionary_value(payload, "experiment_results")
 	settings = dictionary_value(payload, "settings", settings)
 	build_buttons()
-	notify(translate("msg.loaded"), "success")
+	notify(tx("msg.loaded"), "success")
 	return true
 
 func read_save(path: String) -> Dictionary:
@@ -955,25 +955,25 @@ func draw_weather_effect() -> void:
 func draw_hud() -> void:
 	var hour: int = int(minutes / 60.0)
 	var minute: int = int(minutes) % 60
-	draw_text("%s %d   %02d:%02d   %s: %s   %s: %s" % [translate("ui.day"), day, hour, minute, translate("ui.season"), season_name(current_season), translate("ui.weather"), weather_name(current_weather)], Vector2(22, 34), 21)
-	draw_text("%s %d   %s %d   %s %d   %s %d" % [translate("ui.money"), money, translate("ui.knowledge"), knowledge, translate("ui.eco"), eco_score, translate("lab.water"), int(round(water_used))], Vector2(22, 68), 18, GREEN)
+	draw_text("%s %d   %02d:%02d   %s: %s   %s: %s" % [tx("ui.day"), day, hour, minute, tx("ui.season"), season_name(current_season), tx("ui.weather"), weather_name(current_weather)], Vector2(22, 34), 21)
+	draw_text("%s %d   %s %d   %s %d   %s %d" % [tx("ui.money"), money, tx("ui.knowledge"), knowledge, tx("ui.eco"), eco_score, tx("lab.water"), int(round(water_used))], Vector2(22, 68), 18, GREEN)
 	var weather_index: int = ["clear","cloudy","light_rain","heavy_rain","windy","hot","cool","storm","fog"].find(current_weather)
 	if weather_index >= 0:
 		draw_texture_rect(weather_textures[weather_index], Rect2(915, 16, 48, 48), false)
 	draw_text("x%d%s  | F1-F3: %d" % [speed, " ⏸" if paused else "", save_slot], Vector2(980, 36), 18)
 	draw_text("1-5: %s" % crop_name(selected_seed), Vector2(980, 69), 15)
 	panel(Rect2(12, 112, 226, 215), CREAM)
-	draw_text(translate("ui.quest"), Vector2(28, 142), 19, INK)
+	draw_text(tx("ui.quest"), Vector2(28, 142), 19, INK)
 	var quests: Array = array_value(data, "quests")
 	if quest_index < quests.size():
 		var quest: Dictionary = quests[quest_index] as Dictionary
-		draw_text(translate(string_value(quest, "title_key")), Vector2(28, 172), 16, GREEN, 194.0)
+		draw_text(tx(string_value(quest, "title_key")), Vector2(28, 172), 16, GREEN, 194.0)
 		var steps: Array = array_value(quest, "steps")
 		for index: int in range(steps.size()):
 			var marker: String = "✓" if index < quest_step else ("▶" if index == quest_step else "○")
 			draw_text("%s %d/%d" % [marker, index + 1, steps.size()], Vector2(34, 207 + index * 25), 14, TEAL if index < quest_step else INK)
 	else:
-		draw_text("✓ %s" % translate("msg.quest_done"), Vector2(28, 182), 17, TEAL)
+		draw_text("✓ %s" % tx("msg.quest_done"), Vector2(28, 182), 17, TEAL)
 	draw_text("🧪 %d%%  ♻ %d" % [int(round(compost_progress)), organic_waste], Vector2(28, 307), 14, INK)
 	panel(Rect2(1010, 112, 258, 370), CREAM)
 	draw_inspector()
@@ -986,24 +986,24 @@ func draw_hud() -> void:
 		if texture_value is Texture2D:
 			draw_texture_rect(texture_value as Texture2D, Rect2(rect_value.position + Vector2(10, 3), Vector2(rect_value.size.x - 20, rect_value.size.y - 23)), false)
 		if rect_value.size.x >= 56.0:
-			draw_text(translate(String(button_data.get("label", ""))), rect_value.position + Vector2(3, rect_value.size.y - 4), 10, INK, rect_value.size.x - 6, HORIZONTAL_ALIGNMENT_CENTER)
+			draw_text(tx(String(button_data.get("label", ""))), rect_value.position + Vector2(3, rect_value.size.y - 4), 10, INK, rect_value.size.x - 6, HORIZONTAL_ALIGNMENT_CENTER)
 	if message_time > 0.0:
 		panel(Rect2(275, 570, 690, 44), MIST)
 		draw_text(message, Vector2(292, 599), 17, INK, 655.0, HORIZONTAL_ALIGNMENT_CENTER)
-	draw_text("%s: %s | %s %d | %s %d" % [translate("ui.inventory"), crop_name(selected_seed), translate("tool.compost"), int(inventory.get("compost", 0)), translate("tool.bio"), int(inventory.get("bio_spray", 0))], Vector2(12, 612), 14, CREAM)
+	draw_text("%s: %s | %s %d | %s %d" % [tx("ui.inventory"), crop_name(selected_seed), tx("tool.compost"), int(inventory.get("compost", 0)), tx("tool.bio"), int(inventory.get("bio_spray", 0))], Vector2(12, 612), 14, CREAM)
 
 func draw_inspector() -> void:
 	var tile: Dictionary = dictionary_value(tiles, tile_key(selected))
 	draw_text("(%d,%d)" % [selected.x, selected.y], Vector2(1028, 142), 18)
-	draw_bar(Rect2(1028, 158, 218, 22), float_value(tile, "moisture"), BLUE, translate("tool.water"))
-	draw_bar(Rect2(1028, 188, 218, 22), float_value(tile, "light"), GOLD, translate("ui.weather"))
-	draw_bar(Rect2(1028, 218, 218, 22), float_value(tile, "fertility"), GREEN, translate("status.poor_soil"))
-	draw_bar(Rect2(1028, 248, 218, 22), float_value(tile, "health"), TEAL, translate("status.healthy"))
+	draw_bar(Rect2(1028, 158, 218, 22), float_value(tile, "moisture"), BLUE, tx("tool.water"))
+	draw_bar(Rect2(1028, 188, 218, 22), float_value(tile, "light"), GOLD, tx("ui.weather"))
+	draw_bar(Rect2(1028, 218, 218, 22), float_value(tile, "fertility"), GREEN, tx("status.poor_soil"))
+	draw_bar(Rect2(1028, 248, 218, 22), float_value(tile, "health"), TEAL, tx("status.healthy"))
 	var crop_id: String = string_value(tile, "crop")
-	draw_text(crop_name(crop_id) if not crop_id.is_empty() else translate("status.empty"), Vector2(1028, 298), 18, INK)
+	draw_text(crop_name(crop_id) if not crop_id.is_empty() else tx("status.empty"), Vector2(1028, 298), 18, INK)
 	draw_text("Stage %d/5  Q %d" % [int_value(tile, "stage"), int(round(float_value(tile, "quality")))], Vector2(1028, 326), 15)
 	var symptom: String = GrowWiseSimulation.primary_symptom(tile)
-	draw_text(translate("status." + symptom), Vector2(1028, 354), 16, RED if symptom != "healthy" else TEAL)
+	draw_text(tx("status." + symptom), Vector2(1028, 354), 16, RED if symptom != "healthy" else TEAL)
 	if int(inventory.get("ph_meter", 0)) > 0:
 		draw_text("pH %.1f  N %.0f P %.0f K %.0f" % [float_value(tile,"ph"),float_value(tile,"nitrogen"),float_value(tile,"phosphorus"),float_value(tile,"potassium")], Vector2(1028, 384), 14)
 	draw_text("Pest %d  Disease %d  Weed %d" % [int(round(float_value(tile,"pest"))),int(round(float_value(tile,"disease"))),int(round(float_value(tile,"weed")))], Vector2(1028, 416), 13)
@@ -1012,7 +1012,7 @@ func draw_inspector() -> void:
 func draw_menu() -> void:
 	draw_rect(Rect2(0, 0, 1280, 720), Color(0.04, 0.08, 0.05, 0.78))
 	panel(Rect2(385, 150, 510, 455), CREAM)
-	draw_text(translate("game.title"), Vector2(420, 235), 36, GREEN, 440.0, HORIZONTAL_ALIGNMENT_CENTER)
+	draw_text(tx("game.title"), Vector2(420, 235), 36, GREEN, 440.0, HORIZONTAL_ALIGNMENT_CENTER)
 	draw_text("2D Isometric Learning Farm", Vector2(420, 285), 18, INK, 440.0, HORIZONTAL_ALIGNMENT_CENTER)
 	var menu_items: Array[Dictionary] = [
 		{"rect":Rect2(490,360,300,58),"label":"menu.new"},
@@ -1022,7 +1022,7 @@ func draw_menu() -> void:
 	for menu_item: Dictionary in menu_items:
 		var rect_value: Rect2 = menu_item["rect"] as Rect2
 		panel(rect_value, WOOD_LIGHT)
-		draw_text(translate(String(menu_item["label"])), rect_value.position + Vector2(10, 38), 20, Color.WHITE, 280.0, HORIZONTAL_ALIGNMENT_CENTER)
+		draw_text(tx(String(menu_item["label"])), rect_value.position + Vector2(10, 38), 20, Color.WHITE, 280.0, HORIZONTAL_ALIGNMENT_CENTER)
 
 func draw_overlay() -> void:
 	draw_rect(Rect2(0, 0, 1280, 720), Color(0.03, 0.05, 0.04, 0.60))
@@ -1041,32 +1041,32 @@ func draw_overlay() -> void:
 
 func draw_diagnosis() -> void:
 	var tile: Dictionary = dictionary_value(tiles, tile_key(selected))
-	draw_text(translate("tool.inspect"), Vector2(330, 145), 27, GREEN)
-	draw_text("%s | %s" % [crop_name(string_value(tile,"crop")), translate("status." + diagnosis_actual)], Vector2(330, 185), 20)
+	draw_text(tx("tool.inspect"), Vector2(330, 145), 27, GREEN)
+	draw_text("%s | %s" % [crop_name(string_value(tile,"crop")), tx("status." + diagnosis_actual)], Vector2(330, 185), 20)
 	draw_text("Water %d  Soil %d  Light %d  Pest %d  Disease %d  Weed %d" % [int(round(float_value(tile,"moisture"))),int(round(float_value(tile,"fertility"))),int(round(float_value(tile,"light"))),int(round(float_value(tile,"pest"))),int(round(float_value(tile,"disease"))),int(round(float_value(tile,"weed")))], Vector2(330, 225), 14, INK, 560.0)
 	draw_text("เลือกสาเหตุ / Choose a cause", Vector2(330, 275), 17, BLUE)
 	for index: int in range(SYMPTOMS.size()):
 		var rect_value: Rect2 = Rect2(345 + (index % 2) * 235, 325 + int(index / 2) * 48, 220, 38)
 		panel(rect_value, GOLD if diagnosis_choice == SYMPTOMS[index] else MIST)
-		draw_text(translate("status." + SYMPTOMS[index]), rect_value.position + Vector2(8, 26), 14, INK, 204.0, HORIZONTAL_ALIGNMENT_CENTER)
+		draw_text(tx("status." + SYMPTOMS[index]), rect_value.position + Vector2(8, 26), 14, INK, 204.0, HORIZONTAL_ALIGNMENT_CENTER)
 	if diagnosis_choice == diagnosis_actual:
-		draw_text("✓ %s" % translate("msg.correct"), Vector2(350, 545), 18, TEAL, 520.0, HORIZONTAL_ALIGNMENT_CENTER)
+		draw_text("✓ %s" % tx("msg.correct"), Vector2(350, 545), 18, TEAL, 520.0, HORIZONTAL_ALIGNMENT_CENTER)
 
 func draw_shop() -> void:
-	draw_text(translate("ui.shop"), Vector2(330, 145), 27, GREEN)
-	draw_text("%s: %d" % [translate("ui.money"), money], Vector2(700, 145), 20, GOLD)
+	draw_text(tx("ui.shop"), Vector2(330, 145), 27, GREEN)
+	draw_text("%s: %d" % [tx("ui.money"), money], Vector2(700, 145), 20, GOLD)
 	var shop_items: Array = array_value(data, "shop")
 	for index: int in range(shop_items.size()):
 		var item: Dictionary = shop_items[index] as Dictionary
 		var rect_value: Rect2 = Rect2(315, 205 + index * 34, 540, 29)
 		panel(rect_value, MIST)
-		draw_text(translate(string_value(item,"name_key")), rect_value.position + Vector2(8, 21), 13)
+		draw_text(tx(string_value(item,"name_key")), rect_value.position + Vector2(8, 21), 13)
 		draw_text("%d ×%d" % [int_value(item,"price"),int_value(item,"amount")], rect_value.position + Vector2(390, 21), 13, GOLD)
-		draw_text(translate("ui.buy"), rect_value.position + Vector2(470, 21), 13, TEAL)
+		draw_text(tx("ui.buy"), rect_value.position + Vector2(470, 21), 13, TEAL)
 
 func draw_market() -> void:
-	draw_text(translate("ui.market"), Vector2(330, 145), 27, GREEN)
-	draw_text("%s: %d" % [translate("ui.money"), money], Vector2(700, 145), 20, GOLD)
+	draw_text(tx("ui.market"), Vector2(330, 145), 27, GREEN)
+	draw_text("%s: %d" % [tx("ui.money"), money], Vector2(700, 145), 20, GOLD)
 	var crops: Dictionary = dictionary_value(data, "crops")
 	for index: int in range(CROP_IDS.size()):
 		var crop_id: String = CROP_IDS[index]
@@ -1077,10 +1077,10 @@ func draw_market() -> void:
 		panel(rect_value, MIST)
 		draw_text("%s ×%d" % [crop_name(crop_id), amount], rect_value.position + Vector2(10, 30), 16)
 		draw_text("Q%d  @%d" % [average_quality,int_value(crop_def,"sell_price")], rect_value.position + Vector2(260, 30), 14, BLUE)
-		draw_text(translate("ui.sell"), rect_value.position + Vector2(420, 30), 15, TEAL)
+		draw_text(tx("ui.sell"), rect_value.position + Vector2(420, 30), 15, TEAL)
 
 func draw_lab() -> void:
-	draw_text(translate("ui.lab"), Vector2(330, 145), 27, GREEN)
+	draw_text(tx("ui.lab"), Vector2(330, 145), 27, GREEN)
 	panel(Rect2(360, 195, 50, 36), MIST); draw_text("‹", Vector2(370, 222), 24, INK, 30.0, HORIZONTAL_ALIGNMENT_CENTER)
 	panel(Rect2(420, 195, 335, 36), GOLD); draw_text(crop_name(selected_lab_crop), Vector2(430, 221), 17, INK, 315.0, HORIZONTAL_ALIGNMENT_CENTER)
 	panel(Rect2(765, 195, 50, 36), MIST); draw_text("›", Vector2(775, 222), 24, INK, 30.0, HORIZONTAL_ALIGNMENT_CENTER)
@@ -1088,56 +1088,56 @@ func draw_lab() -> void:
 	var labels: Array[String] = ["lab.a","lab.b","lab.c"]
 	for index: int in range(3):
 		var x: float = 330.0 + index * 195.0
-		draw_text(translate(labels[index]), Vector2(x, 270), 14, INK, 180.0, HORIZONTAL_ALIGNMENT_CENTER)
+		draw_text(tx(labels[index]), Vector2(x, 270), 14, INK, 180.0, HORIZONTAL_ALIGNMENT_CENTER)
 		if experiment_results.has(strategies[index]):
 			var result: Dictionary = dictionary_value(experiment_results, strategies[index])
-			draw_bar(Rect2(x, 290, 175, 22), float_value(result,"growth"), GREEN, translate("lab.growth"))
-			draw_bar(Rect2(x, 320, 175, 22), float_value(result,"yield"), GOLD, translate("lab.yield"))
-			draw_bar(Rect2(x, 350, 175, 22), minf(100.0,float_value(result,"water")), BLUE, translate("lab.water"))
-			draw_bar(Rect2(x, 380, 175, 22), float_value(result,"quality"), TEAL, translate("lab.quality"))
+			draw_bar(Rect2(x, 290, 175, 22), float_value(result,"growth"), GREEN, tx("lab.growth"))
+			draw_bar(Rect2(x, 320, 175, 22), float_value(result,"yield"), GOLD, tx("lab.yield"))
+			draw_bar(Rect2(x, 350, 175, 22), minf(100.0,float_value(result,"water")), BLUE, tx("lab.water"))
+			draw_bar(Rect2(x, 380, 175, 22), float_value(result,"quality"), TEAL, tx("lab.quality"))
 			draw_text("Cost %.1f" % float_value(result,"cost"), Vector2(x, 430), 14, RED, 175.0, HORIZONTAL_ALIGNMENT_CENTER)
 	panel(Rect2(495, 520, 220, 48), TEAL)
-	draw_text(translate("ui.run"), Vector2(505, 553), 18, Color.WHITE, 200.0, HORIZONTAL_ALIGNMENT_CENTER)
+	draw_text(tx("ui.run"), Vector2(505, 553), 18, Color.WHITE, 200.0, HORIZONTAL_ALIGNMENT_CENTER)
 
 func draw_notebook() -> void:
-	draw_text(translate("ui.notebook"), Vector2(330, 145), 27, GREEN)
+	draw_text(tx("ui.notebook"), Vector2(330, 145), 27, GREEN)
 	var lessons: Array = array_value(data, "lessons")
 	var line_y: float = 195.0
 	for lesson_value: Variant in lessons:
 		var lesson: Dictionary = lesson_value as Dictionary
 		var id_value: String = string_value(lesson, "id")
 		if bool(unlocked_lessons.get(id_value, false)):
-			draw_text("• " + translate(string_value(lesson,"title_key")), Vector2(330, line_y), 15, INK, 560.0)
+			draw_text("• " + tx(string_value(lesson,"title_key")), Vector2(330, line_y), 15, INK, 560.0)
 			line_y += 43.0
 	if line_y <= 200.0:
 		draw_text("เล่นและทดลองเพื่อปลดล็อกความรู้", Vector2(330, 205), 18, BLUE)
 
 func draw_settings() -> void:
-	draw_text(translate("ui.settings"), Vector2(330, 145), 27, GREEN)
+	draw_text(tx("ui.settings"), Vector2(330, 145), 27, GREEN)
 	var setting_ids: Array[String] = ["high_contrast","reduced_motion","large_text","sound","time_in_panels"]
 	var setting_labels: Array[String] = ["access.high_contrast","access.reduced_motion","access.large_text","access.sound","เวลาเดินระหว่างเปิดหน้าต่าง"]
 	for index: int in range(setting_ids.size()):
 		var rect_value: Rect2 = Rect2(380, 245 + index * 55, 420, 42)
 		panel(rect_value, TEAL if bool(settings.get(setting_ids[index], false)) else MIST)
-		var label: String = translate(setting_labels[index]) if setting_labels[index].begins_with("access.") else setting_labels[index]
+		var label: String = tx(setting_labels[index]) if setting_labels[index].begins_with("access.") else setting_labels[index]
 		draw_text("%s: %s" % [label, "ON" if bool(settings.get(setting_ids[index], false)) else "OFF"], rect_value.position + Vector2(10, 29), 16, Color.WHITE if bool(settings.get(setting_ids[index], false)) else INK, 400.0, HORIZONTAL_ALIGNMENT_CENTER)
 	panel(Rect2(480, 535, 220, 46), GOLD)
-	draw_text("%s: %s" % [translate("access.language"),language.to_upper()], Vector2(490, 567), 17, INK, 200.0, HORIZONTAL_ALIGNMENT_CENTER)
+	draw_text("%s: %s" % [tx("access.language"),language.to_upper()], Vector2(490, 567), 17, INK, 200.0, HORIZONTAL_ALIGNMENT_CENTER)
 
 func draw_quest_book() -> void:
-	draw_text(translate("ui.quest"), Vector2(330, 145), 27, GREEN)
+	draw_text(tx("ui.quest"), Vector2(330, 145), 27, GREEN)
 	var quests: Array = array_value(data, "quests")
 	for index: int in range(quests.size()):
 		var quest: Dictionary = quests[index] as Dictionary
 		var status: String = "✓" if index < quest_index else ("▶" if index == quest_index else "○")
-		draw_text("%s %s" % [status,translate(string_value(quest,"title_key"))], Vector2(340, 195 + index * 52), 17, TEAL if index < quest_index else INK, 540.0)
+		draw_text("%s %s" % [status,tx(string_value(quest,"title_key"))], Vector2(340, 195 + index * 52), 17, TEAL if index < quest_index else INK, 540.0)
 
 func draw_season_report() -> void:
-	draw_text(translate("msg.season_report"), Vector2(330, 145), 27, GREEN)
+	draw_text(tx("msg.season_report"), Vector2(330, 145), 27, GREEN)
 	var rows: Array[Array] = [
-		[translate("lab.yield"),int_value(season_report,"yield")],[translate("lab.water"),int_value(season_report,"water")],[translate("lab.cost"),int_value(season_report,"cost")],
-		[translate("ui.money"),int_value(season_report,"revenue")],["Profit",int_value(season_report,"profit")],["Soil",int_value(season_report,"soil")],
-		[translate("ui.eco"),int_value(season_report,"eco")],["Biodiversity",int_value(season_report,"biodiversity")],[translate("ui.knowledge"),int_value(season_report,"knowledge")]
+		[tx("lab.yield"),int_value(season_report,"yield")],[tx("lab.water"),int_value(season_report,"water")],[tx("lab.cost"),int_value(season_report,"cost")],
+		[tx("ui.money"),int_value(season_report,"revenue")],["Profit",int_value(season_report,"profit")],["Soil",int_value(season_report,"soil")],
+		[tx("ui.eco"),int_value(season_report,"eco")],["Biodiversity",int_value(season_report,"biodiversity")],[tx("ui.knowledge"),int_value(season_report,"knowledge")]
 	]
 	for index: int in range(rows.size()):
 		draw_text("%s: %s" % [String(rows[index][0]),String(rows[index][1])], Vector2(370 + (index % 2) * 270, 205 + int(index / 2) * 65), 19, INK)
