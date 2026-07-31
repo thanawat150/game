@@ -12,12 +12,12 @@ public sealed partial class WorldExpansionDirector
                 PromoteLegend(ruler, LegendRole.Ruler, 35);
         }
 
-        IEnumerable<SimEntity> candidates = _simulation.State.Entities.Values
-            .Where(e => e.IsAlive && e.Species == SpeciesKind.Settler && e.AgeDays >= 18 * 360)
-            .OrderByDescending(e => e.Intelligence + e.Morale + e.Health * 0.2f)
-            .ThenBy(e => e.Id)
-            .Take(Math.Max(2, _simulation.State.Kingdoms.Count * 3));
-        foreach (SimEntity entity in candidates)
+        int targetCount = Math.Max(2, _simulation.State.Kingdoms.Count * 3);
+        foreach (SimEntity entity in _simulation.State.Entities.Values
+                     .Where(e => e.IsAlive && e.Species == SpeciesKind.Settler && e.AgeDays >= 18 * 360)
+                     .OrderByDescending(e => e.Intelligence + e.Morale + e.Health * 0.2f)
+                     .ThenBy(e => e.Id)
+                     .Take(targetCount))
         {
             int threshold = Math.Clamp((int)(18 * State.ModRules.LegendPromotionMultiplier), 5, 80);
             if (Math.Abs(StableHash(entity.Id, State.Seed) % 100) >= threshold)
@@ -40,10 +40,9 @@ public sealed partial class WorldExpansionDirector
     {
         if (State.Legends.TryGetValue(entity.Id, out LegendProfile? existing))
         {
-            if (existing.Role == LegendRole.None)
-                existing.Role = role;
+            if (existing.Role == LegendRole.None) existing.Role = role;
             existing.Fame = Math.Max(existing.Fame, startingFame);
-            UpdateLegendTitle(existing, entity);
+            UpdateLegendTitle(existing);
             return existing;
         }
 
@@ -64,10 +63,15 @@ public sealed partial class WorldExpansionDirector
             Traits = selectedTraits.ToList(),
             KnownChildren = entity.Children.Count,
         };
-        AddMemory(legend, MemoryKind.Birth, $"Born into {legend.Race} culture.", entity.X, entity.Y, null, 1);
         State.Legends[entity.Id] = legend;
-        BuildFamilyRelationships(legend, entity);
-        UpdateLegendTitle(legend, entity);
+        AddMemory(legend, MemoryKind.Birth, $"Born into {legend.Race} culture.", entity.X, entity.Y, null, 1);
+        foreach (ulong parent in entity.Parents)
+            SetRelationship(legend, parent, RelationshipKind.Family, 85);
+        foreach (ulong child in entity.Children)
+            SetRelationship(legend, child, RelationshipKind.Family, 90);
+        if (entity.MateId is ulong mate)
+            SetRelationship(legend, mate, RelationshipKind.Partner, 95);
+        UpdateLegendTitle(legend);
         AddChronicle("legend.rises", "ตำนานถือกำเนิด", $"{entity.Name} เริ่มเป็นที่กล่าวขานในฐานะ {legend.Title}", entity.X, entity.Y, 2, entity.Id);
         return legend;
     }
@@ -79,27 +83,16 @@ public sealed partial class WorldExpansionDirector
             SimEntity? entity = _simulation.State.Entities.GetValueOrDefault(legend.EntityId);
             if (entity is null || !entity.IsAlive)
             {
-                if (!legend.IsDead)
-                {
-                    legend.IsDead = true;
-                    legend.DeathDay = _simulation.State.Day;
-                    legend.Legacy += Math.Max(5, legend.Fame / 3);
-                    AddMemory(legend, MemoryKind.Death, "Their life ended, but their story remained.", entity?.X ?? 0, entity?.Y ?? 0, null, 8);
-                    string record = $"ปี {_simulation.State.Year}: {DisplayLegendName(legend)} สิ้นชีวิต ทิ้งมรดก {legend.Legacy}";
-                    State.WorldLegends.Add(record);
-                    AddChronicle("legend.dies", "การจากไปของบุคคลสำคัญ", record, entity?.X ?? 0, entity?.Y ?? 0, 3, legend.EntityId);
-                    TryCreateMemorialForLegend(legend);
-                }
+                HandleLegendDeath(legend, entity);
                 continue;
             }
-
             if (_simulation.State.Day - legend.LastEvaluatedDay < 15)
                 continue;
+
             legend.LastEvaluatedDay = _simulation.State.Day;
             CitizenLifeProfile? life = _living.State.Citizens.GetValueOrDefault(entity.Id);
             int fameGain = 0;
-            if (life?.Activity is DailyActivity.Working or DailyActivity.Patrolling or DailyActivity.Trading)
-                fameGain++;
+            if (life?.Activity is DailyActivity.Working or DailyActivity.Patrolling or DailyActivity.Trading) fameGain++;
             if (entity.Morale > 80) fameGain++;
             if (entity.Health < 35 && legend.Traits.Contains(PersonalityTrait.Brave)) fameGain++;
             if (life?.Job is CitizenJob.Ruler or CitizenJob.Scholar or CitizenJob.Priest) fameGain++;
@@ -108,92 +101,97 @@ public sealed partial class WorldExpansionDirector
             if (entity.Children.Count > legend.KnownChildren)
             {
                 foreach (ulong child in entity.Children.Skip(legend.KnownChildren))
+                {
+                    SetRelationship(legend, child, RelationshipKind.Family, 92);
                     AddMemory(legend, MemoryKind.ChildBorn, "A child joined the family line.", entity.X, entity.Y, child, 3);
+                }
                 legend.KnownChildren = entity.Children.Count;
             }
             if (entity.MateId is ulong mateId && !legend.Relationships.ContainsKey(mateId))
             {
-                legend.Relationships[mateId] = new LegendRelationship
-                {
-                    OtherEntityId = mateId,
-                    Kind = RelationshipKind.Partner,
-                    Strength = 90,
-                    LastChangedDay = _simulation.State.Day,
-                };
+                SetRelationship(legend, mateId, RelationshipKind.Partner, 90);
                 AddMemory(legend, MemoryKind.Marriage, "Formed a lifelong partnership.", entity.X, entity.Y, mateId, 4);
             }
             BuildSocialRelationships(legend, entity);
-            UpdateLegendTitle(legend, entity);
+            UpdateLegendTitle(legend);
         }
 
-        if (_simulation.State.TotalBattles > State.LastBattles)
+        if (_simulation.State.TotalBattles <= State.LastBattles)
+            return;
+        int newBattles = (int)Math.Min(20, _simulation.State.TotalBattles - State.LastBattles);
+        State.LastBattles = _simulation.State.TotalBattles;
+        foreach (LegendProfile warrior in State.Legends.Values
+                     .Where(l => !l.IsDead && l.Role is LegendRole.General or LegendRole.Hero)
+                     .OrderByDescending(l => l.Fame)
+                     .Take(3))
         {
-            int newBattles = (int)Math.Min(20, _simulation.State.TotalBattles - State.LastBattles);
-            State.LastBattles = _simulation.State.TotalBattles;
-            foreach (LegendProfile warrior in State.Legends.Values.Where(l => !l.IsDead && l.Role is LegendRole.General or LegendRole.Hero).OrderByDescending(l => l.Fame).Take(3))
-            {
-                warrior.Battles += newBattles;
-                warrior.Fame += newBattles * 3;
-                SimEntity? entity = _simulation.State.Entities.GetValueOrDefault(warrior.EntityId);
-                AddMemory(warrior, MemoryKind.Battle, $"Survived {newBattles} major battle reports.", entity?.X ?? 0, entity?.Y ?? 0, null, 5);
-            }
+            warrior.Battles += newBattles;
+            warrior.Fame += newBattles * 3;
+            SimEntity? entity = _simulation.State.Entities.GetValueOrDefault(warrior.EntityId);
+            AddMemory(warrior, MemoryKind.Battle, $"Survived {newBattles} major battle reports.", entity?.X ?? 0, entity?.Y ?? 0, null, 5);
         }
     }
 
-    private void BuildFamilyRelationships(LegendProfile legend, SimEntity entity)
+    private void HandleLegendDeath(LegendProfile legend, SimEntity? entity)
     {
-        foreach (ulong parent in entity.Parents)
-            legend.Relationships[parent] = new LegendRelationship { OtherEntityId = parent, Kind = RelationshipKind.Family, Strength = 85 };
-        foreach (ulong child in entity.Children)
-            legend.Relationships[child] = new LegendRelationship { OtherEntityId = child, Kind = RelationshipKind.Family, Strength = 90 };
-        if (entity.MateId is ulong mate)
-            legend.Relationships[mate] = new LegendRelationship { OtherEntityId = mate, Kind = RelationshipKind.Partner, Strength = 95 };
+        if (legend.IsDead) return;
+        legend.IsDead = true;
+        legend.DeathDay = _simulation.State.Day;
+        legend.Legacy += Math.Max(5, legend.Fame / 3);
+        AddMemory(legend, MemoryKind.Death, "Their life ended, but their story remained.", entity?.X ?? 0, entity?.Y ?? 0, null, 8);
+        string record = $"ปี {_simulation.State.Year}: {DisplayLegendName(legend)} สิ้นชีวิต ทิ้งมรดก {legend.Legacy}";
+        State.WorldLegends.Add(record);
+        AddChronicle("legend.dies", "การจากไปของบุคคลสำคัญ", record, entity?.X ?? 0, entity?.Y ?? 0, 3, legend.EntityId);
+        TryCreateMemorialForLegend(legend, entity);
     }
 
     private void BuildSocialRelationships(LegendProfile legend, SimEntity entity)
     {
-        IEnumerable<SimEntity> nearby = _simulation.State.Entities.Values
-            .Where(other => other.IsAlive && other.Id != entity.Id && other.Species == SpeciesKind.Settler && other.SettlementId == entity.SettlementId)
-            .OrderBy(other => DistanceSquared(entity.X, entity.Y, other.X, other.Y))
-            .ThenBy(other => other.Id)
-            .Take(3);
-        foreach (SimEntity other in nearby)
+        foreach (SimEntity other in _simulation.State.Entities.Values
+                     .Where(other => other.IsAlive && other.Id != entity.Id && other.Species == SpeciesKind.Settler && other.SettlementId == entity.SettlementId)
+                     .OrderBy(other => DistanceSquared(entity.X, entity.Y, other.X, other.Y))
+                     .ThenBy(other => other.Id)
+                     .Take(3))
         {
-            if (legend.Relationships.ContainsKey(other.Id))
-                continue;
+            if (legend.Relationships.ContainsKey(other.Id)) continue;
             int hash = Math.Abs(StableHash(entity.Id ^ other.Id, State.Seed));
-            RelationshipKind kind = hash % 10 switch
+            int roll = hash % 10;
+            RelationshipKind kind = roll switch
             {
                 0 => RelationshipKind.Rival,
                 1 when legend.Traits.Contains(PersonalityTrait.Cruel) => RelationshipKind.Enemy,
                 2 when other.Intelligence > entity.Intelligence => RelationshipKind.Mentor,
                 _ => RelationshipKind.Friend,
             };
-            int strength = kind is RelationshipKind.Enemy or RelationshipKind.Rival ? -35 - hash % 35 : 35 + hash % 45;
-            legend.Relationships[other.Id] = new LegendRelationship
-            {
-                OtherEntityId = other.Id,
-                Kind = kind,
-                Strength = strength,
-                LastChangedDay = _simulation.State.Day,
-            };
+            int strength = kind is RelationshipKind.Enemy or RelationshipKind.Rival
+                ? -35 - hash % 35
+                : 35 + hash % 45;
+            SetRelationship(legend, other.Id, kind, strength);
         }
     }
 
-    private void TryCreateMemorialForLegend(LegendProfile legend)
+    private void SetRelationship(LegendProfile legend, ulong otherId, RelationshipKind kind, int strength)
     {
-        SimEntity? entity = _simulation.State.Entities.GetValueOrDefault(legend.EntityId);
-        ulong? cityId = entity?.SettlementId;
-        if (cityId is null || !_simulation.State.Settlements.TryGetValue(cityId.Value, out SettlementState? city))
+        legend.Relationships[otherId] = new LegendRelationship
+        {
+            OtherEntityId = otherId,
+            Kind = kind,
+            Strength = strength,
+            LastChangedDay = _simulation.State.Day,
+        };
+    }
+
+    private void TryCreateMemorialForLegend(LegendProfile legend, SimEntity? entity)
+    {
+        if (entity?.SettlementId is not ulong cityId || !_simulation.State.Settlements.TryGetValue(cityId, out SettlementState? city))
             return;
-        if (legend.Fame < 50 || city.Stone < 12)
-            return;
+        if (legend.Fame < 50 || city.Stone < 12) return;
         CityDistrictState district = EnsureCityDistrict(city);
         PlaceBuilding(district, city, BuildingKind.Monument, immediate: legend.Fame >= 150);
         legend.Monuments++;
     }
 
-    private void UpdateLegendTitle(LegendProfile legend, SimEntity entity)
+    private void UpdateLegendTitle(LegendProfile legend)
     {
         legend.Title = legend.Role switch
         {
@@ -214,12 +212,9 @@ public sealed partial class WorldExpansionDirector
             >= 50 => "ผู้เป็นที่กล่าวขาน",
             _ => string.Empty,
         };
-        if (legend.Traits.Contains(PersonalityTrait.Kind) && legend.LivesSaved > 0)
-            legend.Epithet = "ผู้เปี่ยมเมตตา";
-        if (legend.Battles >= 5)
-            legend.Epithet = "ผู้ผ่านศึกนับครั้งไม่ถ้วน";
-        if (legend.Discoveries >= 3)
-            legend.Epithet = "ผู้เปิดม่านแห่งความลับ";
+        if (legend.Traits.Contains(PersonalityTrait.Kind) && legend.LivesSaved > 0) legend.Epithet = "ผู้เปี่ยมเมตตา";
+        if (legend.Battles >= 5) legend.Epithet = "ผู้ผ่านศึกนับครั้งไม่ถ้วน";
+        if (legend.Discoveries >= 3) legend.Epithet = "ผู้เปิดม่านแห่งความลับ";
     }
 
     public string DisplayLegendName(LegendProfile legend)
@@ -246,15 +241,14 @@ public sealed partial class WorldExpansionDirector
     public void SetDeityPath(DeityPath path)
     {
         State.Faith.Path = path;
-        FaithDoctrine doctrine = path switch
+        State.Faith.Doctrines.Add(path switch
         {
             DeityPath.Mercy => FaithDoctrine.Charity,
             DeityPath.Nature => FaithDoctrine.NatureBalance,
             DeityPath.War => FaithDoctrine.Conquest,
             DeityPath.Knowledge => FaithDoctrine.Scholarship,
             _ => FaithDoctrine.Sacrifice,
-        };
-        State.Faith.Doctrines.Add(doctrine);
+        });
     }
 
     private void UpdateFaithProgression()
@@ -266,9 +260,10 @@ public sealed partial class WorldExpansionDirector
             CityDistrictState district = EnsureCityDistrict(city);
             int temples = district.Buildings.Count(b => b.Kind == BuildingKind.Temple && b.Status == BuildingStatus.Active);
             int priests = _living.State.Citizens.Values.Count(c => c.HomeSettlementId == city.Id && c.Job == CitizenJob.Priest);
-            float cityFaith = Math.Clamp(State.Faith.CityFaith.GetValueOrDefault(city.Id) + (temples * 0.08f + priests * 0.015f) * State.ModRules.FaithGainMultiplier, 0, 1000);
-            if (city.Happiness < 25) cityFaith = Math.Max(0, cityFaith - 0.15f);
-            State.Faith.CityFaith[city.Id] = cityFaith;
+            float cityFaith = State.Faith.CityFaith.GetValueOrDefault(city.Id);
+            cityFaith += (temples * 0.08f + priests * 0.015f) * State.ModRules.FaithGainMultiplier;
+            if (city.Happiness < 25) cityFaith -= 0.15f;
+            State.Faith.CityFaith[city.Id] = Math.Clamp(cityFaith, 0, 1000);
             dailyFaith += temples * 0.04f + priests * 0.01f;
         }
         State.Faith.Faith = Math.Clamp(State.Faith.Faith + dailyFaith * State.ModRules.FaithGainMultiplier, 0, 10000);
@@ -285,8 +280,7 @@ public sealed partial class WorldExpansionDirector
         int start = Math.Clamp(State.Faith.LastChronicleIndex, 0, _simulation.State.Chronicle.Count);
         for (int i = start; i < _simulation.State.Chronicle.Count; i++)
         {
-            ChronicleEvent entry = _simulation.State.Chronicle[i];
-            string type = entry.Type.ToLowerInvariant();
+            string type = _simulation.State.Chronicle[i].Type.ToLowerInvariant();
             if (type.Contains("bless") || type.Contains("forest") || type.Contains("peace") || type.Contains("heal"))
             {
                 State.Faith.Faith += 2.5f * State.ModRules.FaithGainMultiplier;
@@ -295,8 +289,9 @@ public sealed partial class WorldExpansionDirector
             if (type.Contains("meteor") || type.Contains("lightning") || type.Contains("curse") || type.Contains("plague"))
             {
                 State.Faith.Fear += 3.5f;
-                if (State.Faith.Path == DeityPath.Fear) State.Faith.Faith += 1.5f;
-                else State.Faith.Faith = Math.Max(0, State.Faith.Faith - 0.5f);
+                State.Faith.Faith = State.Faith.Path == DeityPath.Fear
+                    ? State.Faith.Faith + 1.5f
+                    : Math.Max(0, State.Faith.Faith - 0.5f);
             }
         }
         State.Faith.LastChronicleIndex = _simulation.State.Chronicle.Count;
@@ -316,8 +311,7 @@ public sealed partial class WorldExpansionDirector
 
     public bool UseMiracle(MiracleKind miracle, ulong? settlementId = null)
     {
-        if (!State.Faith.UnlockedMiracles.Contains(miracle))
-            return false;
+        if (!State.Faith.UnlockedMiracles.Contains(miracle)) return false;
         float cost = miracle switch
         {
             MiracleKind.BlessHarvest => 12,
@@ -329,11 +323,13 @@ public sealed partial class WorldExpansionDirector
             MiracleKind.Smite => 35,
             _ => 20,
         };
-        if (State.Faith.Favor < cost)
-            return false;
-        SettlementState? city = settlementId is ulong id ? _simulation.State.Settlements.GetValueOrDefault(id) : _simulation.State.Settlements.Values.OrderByDescending(c => c.Happiness).FirstOrDefault();
+        if (State.Faith.Favor < cost) return false;
+        SettlementState? city = settlementId is ulong id
+            ? _simulation.State.Settlements.GetValueOrDefault(id)
+            : _simulation.State.Settlements.Values.OrderByDescending(c => c.Happiness).FirstOrDefault();
         int x = city?.X ?? _world.Width / 2;
         int y = city?.Y ?? _world.Height / 2;
+
         switch (miracle)
         {
             case MiracleKind.BlessHarvest:
@@ -346,8 +342,8 @@ public sealed partial class WorldExpansionDirector
                 foreach (SimEntity entity in _simulation.State.Entities.Values.Where(e => e.IsAlive && e.SettlementId == city.Id))
                     entity.Health = Math.Min(100 * entity.VitalityGene, entity.Health + 35);
                 foreach (DiseaseState disease in _simulation.State.Diseases)
-                    foreach (ulong infected in disease.InfectedDays.Keys.Where(id2 => _simulation.State.Entities.GetValueOrDefault(id2)?.SettlementId == city.Id).ToArray())
-                        disease.InfectedDays.Remove(infected);
+                    foreach (ulong infectedId in disease.InfectedDays.Keys.Where(id2 => _simulation.State.Entities.GetValueOrDefault(id2)?.SettlementId == city.Id).ToArray())
+                        disease.InfectedDays.Remove(infectedId);
                 break;
             case MiracleKind.Inspire:
                 if (city is null) return false;
@@ -356,7 +352,10 @@ public sealed partial class WorldExpansionDirector
                     entity.Morale = Math.Min(100, entity.Morale + 25);
                 break;
             case MiracleKind.Smite:
-                foreach (SimEntity target in _simulation.State.Entities.Values.Where(e => e.IsAlive && DistanceSquared(e.X, e.Y, x, y) <= 10 * 10 && (e.Species == SpeciesKind.Monster || e.KingdomId != city?.KingdomId)).Take(30))
+                foreach (SimEntity target in _simulation.State.Entities.Values
+                             .Where(e => e.IsAlive && DistanceSquared(e.X, e.Y, x, y) <= 100)
+                             .Where(e => e.Species == SpeciesKind.Monster || (city is not null && e.KingdomId != city.KingdomId))
+                             .Take(30))
                     target.Health -= 60;
                 State.Faith.Fear += 8;
                 break;
@@ -367,14 +366,13 @@ public sealed partial class WorldExpansionDirector
                         int tx = x + dx;
                         int ty = y + dy;
                         if (!_world.IsInside(tx, ty) || dx * dx + dy * dy > 64) continue;
-                        TerrainType terrain = _world.GetTerrain(tx, ty);
-                        if (terrain is TerrainType.Grassland or TerrainType.Beach)
+                        if (_world.GetTerrain(tx, ty) is TerrainType.Grassland or TerrainType.Beach)
                             _world.SetTerrain(tx, ty, TerrainType.Forest);
                     }
                 break;
             case MiracleKind.RevealRuins:
                 foreach (RuinState ruin in State.Ruins.Values.OrderBy(r => DistanceSquared(r.X, r.Y, x, y)).Take(4))
-                    ruin.DiscoveredDay = ruin.DiscoveredDay < 0 ? _simulation.State.Day : ruin.DiscoveredDay;
+                    if (ruin.DiscoveredDay < 0) ruin.DiscoveredDay = _simulation.State.Day;
                 break;
             case MiracleKind.CalmSea:
                 _living.State.Weather = WeatherKind.Clear;
@@ -383,6 +381,7 @@ public sealed partial class WorldExpansionDirector
                 foreach (FleetState fleet in State.Fleets.Values) fleet.Morale = Math.Min(100, fleet.Morale + 10);
                 break;
         }
+
         State.Faith.Favor -= cost;
         State.Faith.Faith += 1.5f;
         AddChronicle("faith.miracle", "ปาฏิหาริย์", $"ผู้เล่นใช้ปาฏิหาริย์ {miracle}", x, y, 3);
