@@ -1,0 +1,31 @@
+{
+  "water_tools": [
+    {"id":"drain_channel","name":"ร่องระบายน้ำ","cost":{"money":35,"stone":1},"description":"ลดน้ำในแปลงต้นทางและส่งลงบ่อหรือช่องปลายทาง"},
+    {"id":"irrigation_channel","name":"ร่องส่งน้ำ","cost":{"money":35,"wood":1},"description":"ดึงน้ำจากบ่อและส่งไปยังแปลงแห้งตามทิศของร่อง"},
+    {"id":"levee","name":"คันดิน","cost":{"money":45,"stone":1,"fiber":1},"description":"ลดน้ำไหลเข้าจากฝนหนักและพายุ"},
+    {"id":"water_gate","name":"ประตูน้ำ","cost":{"money":180,"wood":4,"scrap":2},"description":"ควบคุมการไหลของเครือข่ายร่องน้ำ"},
+    {"id":"water_pump","name":"ปั๊มน้ำ","cost":{"money":420,"scrap":5,"rubber":3},"description":"เพิ่มแรงส่งน้ำ แต่มีค่าเดินเครื่องวันละ 8 เหรียญ"},
+    {"id":"retention_pond","name":"บ่อรับน้ำ","cost":{"money":550,"stone":8,"wood":5},"description":"กักเก็บน้ำระบายและใช้ส่งน้ำกลับในวันที่แห้ง"}
+  ],
+  "vehicles": [
+    {"id":"handcart","name":"รถเข็น","cost":{"money":180,"wood":5},"capacity":12,"trip_hours":8.0,"transport_cost":4,"price_multiplier":1.00,"description":"ขนของปริมาณน้อยไปตลาดชุมชน"},
+    {"id":"pickup","name":"รถกระบะฟาร์ม","cost":{"money":1200,"scrap":8,"rubber":4},"capacity":35,"trip_hours":5.0,"transport_cost":18,"price_multiplier":1.12,"description":"ขนผลผลิตและสินค้าแปรรูปเข้าเมือง"},
+    {"id":"farm_truck","name":"รถบรรทุกฟาร์ม","cost":{"money":3200,"scrap":18,"rubber":8,"glass":4},"capacity":80,"trip_hours":3.5,"transport_cost":42,"price_multiplier":1.25,"description":"ขนสินค้าปริมาณมากและรับคำสั่งซื้อเมือง"},
+    {"id":"electric_truck","name":"รถบรรทุกไฟฟ้า","cost":{"money":6500,"scrap":28,"rubber":12,"glass":8},"capacity":110,"trip_hours":3.0,"transport_cost":20,"price_multiplier":1.32,"eco_bonus":3,"description":"ประหยัดค่าขนส่งและเพิ่มคะแนนสิ่งแวดล้อม"}
+  ],
+  "outfits": [
+    {"id":"garden","name":"ชุดทำสวน","cost":0,"level":1,"hat":"straw","shirt":"4e9bb3","pants":"29302a","bonus":"ไม่มีโบนัส เป็นชุดเริ่มต้น"},
+    {"id":"raincoat","name":"ชุดกันฝน","cost":180,"level":2,"hat":"hood","shirt":"e9b84d","pants":"315a3a","bonus":"ทำงานกลางฝนโดยสุขภาพพืชลดจากการเหยียบน้ำน้อยลง"},
+    {"id":"fisher","name":"ชุดนักตกปลา","cost":260,"level":4,"hat":"bucket","shirt":"4c927e","pants":"29302a","bonus":"พื้นที่จับปลาในมินิเกมกว้างขึ้น 6%"},
+    {"id":"builder","name":"ชุดช่างก่อสร้าง","cost":320,"level":5,"hat":"helmet","shirt":"d77a45","pants":"5e3b30","bonus":"ค่าก่อสร้างเงินลด 5%"},
+    {"id":"researcher","name":"ชุดนักวิจัย","cost":420,"level":7,"hat":"cap","shirt":"f3e5c2","pants":"4e9bb3","bonus":"ได้รับความรู้จากการตรวจพืชและทดลองเพิ่ม 15%"},
+    {"id":"driver","name":"ชุดพนักงานขนส่ง","cost":380,"level":8,"hat":"cap","shirt":"c65a4b","pants":"29302a","bonus":"เวลาเดินทางรถลด 8%"},
+    {"id":"mayor","name":"ชุดผู้ดูแลเมือง","cost":900,"level":12,"hat":"formal","shirt":"315a3a","pants":"29302a","bonus":"ความสุขเมืองและชื่อเสียงเพิ่ม 3"}
+  ],
+  "cargo_categories": [
+    {"id":"produce","name":"ผลผลิตสด","prefix":"produce_","base_multiplier":1.0},
+    {"id":"fish","name":"ปลาและกุ้ง","prefix":"fish_","base_multiplier":1.15},
+    {"id":"processed","name":"สินค้าแปรรูป","prefix":"processed_","base_multiplier":1.35},
+    {"id":"meal","name":"อาหารพร้อมขาย","prefix":"meal_","base_multiplier":1.45}
+  ]
+}
