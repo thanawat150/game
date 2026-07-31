@@ -63,11 +63,11 @@ public enum GameArtEffect
 
 public sealed class GeneratedGameArtAtlas
 {
-    public const int IconCell = 64;
-    public const int CharacterCell = 64;
-    public const int PortraitCell = 128;
-    public const int BuildingCell = 128;
-    public const int EffectCell = 96;
+    public const int IconCell = 48;
+    public const int CharacterCell = 48;
+    public const int PortraitCell = 96;
+    public const int BuildingCell = 80;
+    public const int EffectCell = 64;
 
     public Texture2D IconsTexture { get; }
     public Texture2D CharactersTexture { get; }
