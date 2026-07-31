@@ -1,0 +1,54 @@
+{
+  "zones": [
+    {"id":"farm","name":"สวนทดลอง","cost":0,"level":1,"description":"แปลงปลูกและพื้นที่เรียนรู้หลัก"},
+    {"id":"homestead","name":"พื้นที่บ้านและงานช่าง","cost":450,"level":2,"description":"สร้างบ้าน โรงเก็บของ ครัว และโรงงานแปรรูป"},
+    {"id":"riverside","name":"ริมแม่น้ำ","cost":700,"level":4,"description":"สร้างท่าเรือ ตกปลา และเลี้ยงชุมชนด้วยอาหารจากน้ำ"},
+    {"id":"village","name":"ย่านชุมชน","cost":1200,"level":6,"description":"สร้างร้านค้า โรงเรียน คลินิก และบ้านของชาวเมือง"},
+    {"id":"highland","name":"เนินป่าและเหมือง","cost":1800,"level":9,"description":"หาไม้ สมุนไพร หิน และแร่สำหรับอาคารระดับสูง"}
+  ],
+  "buildings": [
+    {"id":"house","name":"บ้านของเรา","zone":"homestead","levels":3,"cost":[{"wood":8,"stone":4,"money":250},{"wood":14,"stone":9,"glass":3,"money":650},{"wood":22,"stone":16,"glass":6,"scrap":5,"money":1400}],"population":[1,2,3],"happiness":[4,7,10],"description":"พักผ่อน ทำอาหาร และเพิ่มความจุพลังงานประจำวัน"},
+    {"id":"storage","name":"โรงเก็บของ","zone":"homestead","levels":3,"cost":[{"wood":7,"stone":3,"money":180},{"wood":12,"stone":7,"scrap":3,"money":480},{"wood":18,"stone":12,"scrap":7,"money":950}],"storage":[30,60,120],"description":"เพิ่มความจุคลังและลดของเสียหลังจบวัน"},
+    {"id":"kitchen","name":"ครัวชุมชน","zone":"homestead","levels":2,"cost":[{"wood":6,"stone":5,"money":220},{"wood":12,"stone":9,"glass":2,"money":600}],"happiness":[5,9],"description":"ปรุงอาหารจากผลผลิตและปลา เพิ่มมูลค่าและความสุข"},
+    {"id":"workshop","name":"โรงงานแปรรูป","zone":"homestead","levels":3,"cost":[{"wood":10,"stone":6,"scrap":4,"money":400},{"wood":16,"stone":12,"scrap":8,"money":900},{"wood":25,"stone":20,"scrap":14,"glass":5,"money":1800}],"income":[15,35,70],"description":"แปรรูปผลผลิต คราฟต์วัสดุก่อสร้าง และสร้างรายได้รายวัน"},
+    {"id":"dock","name":"ท่าเรือไม้","zone":"riverside","levels":3,"cost":[{"wood":10,"fiber":5,"money":300},{"wood":18,"fiber":9,"stone":5,"money":750},{"wood":28,"fiber":15,"stone":10,"scrap":5,"money":1500}],"fishing_bonus":[0.05,0.12,0.22],"description":"เปิดระบบตกปลา เพิ่มชนิดปลาและโอกาสได้ปลาคุณภาพสูง"},
+    {"id":"fish_market","name":"ตลาดปลา","zone":"riverside","levels":2,"cost":[{"wood":9,"stone":6,"money":420},{"wood":18,"stone":12,"glass":3,"money":1000}],"income":[25,60],"description":"ขายปลาและอาหารทะเลในราคาดีขึ้น"},
+    {"id":"villager_house","name":"บ้านชาวเมือง","zone":"village","levels":3,"cost":[{"wood":12,"stone":7,"money":500},{"wood":20,"stone":13,"glass":4,"money":1000},{"wood":30,"stone":20,"glass":8,"money":1900}],"population":[3,6,10],"happiness":[2,4,7],"description":"เพิ่มจำนวนประชากรและคำขอจากชุมชน"},
+    {"id":"general_store","name":"ร้านค้าชุมชน","zone":"village","levels":2,"cost":[{"wood":14,"stone":8,"glass":2,"money":650},{"wood":24,"stone":15,"glass":6,"money":1400}],"income":[35,80],"description":"ขายสินค้าอัตโนมัติและเพิ่มรายการสินค้าประจำวัน"},
+    {"id":"school","name":"โรงเรียนเกษตร","zone":"village","levels":2,"cost":[{"wood":16,"stone":12,"glass":4,"money":850},{"wood":28,"stone":20,"glass":8,"money":1800}],"knowledge":[3,7],"happiness":[5,9],"description":"เพิ่มความรู้ทุกวันและปลดล็อกบทเรียนชุมชน"},
+    {"id":"clinic","name":"คลินิกชุมชน","zone":"village","levels":2,"cost":[{"wood":14,"stone":12,"herb":8,"money":800},{"wood":24,"stone":20,"herb":14,"glass":5,"money":1700}],"happiness":[7,13],"description":"ลดผลกระทบเหตุการณ์โรคและเพิ่มความสุข"},
+    {"id":"research_center","name":"ศูนย์วิจัยเกษตร","zone":"village","levels":3,"cost":[{"wood":18,"stone":14,"glass":6,"scrap":6,"money":1100},{"wood":28,"stone":22,"glass":10,"scrap":12,"money":2200},{"wood":40,"stone":32,"glass":16,"scrap":20,"money":4200}],"knowledge":[5,11,20],"description":"เพิ่ม XP งานทดลองและพยากรณ์ผลผลิตล่วงหน้า"},
+    {"id":"town_hall","name":"ศาลากลาง","zone":"village","levels":3,"cost":[{"wood":22,"stone":18,"glass":5,"money":1600},{"wood":35,"stone":30,"glass":10,"money":3200},{"wood":55,"stone":45,"glass":18,"scrap":18,"money":6500}],"reputation":[5,12,25],"description":"กำหนดระดับเมือง ปลดล็อกเทศกาลและรายได้ภาษี"},
+    {"id":"mine","name":"เหมืองชุมชน","zone":"highland","levels":3,"cost":[{"wood":15,"stone":20,"scrap":6,"money":900},{"wood":24,"stone":32,"scrap":12,"money":1900},{"wood":38,"stone":48,"scrap":22,"money":3600}],"mining_bonus":[1,2,4],"description":"หาแร่ หิน และเศษโลหะสำหรับอาคารขั้นสูง"},
+    {"id":"forest_camp","name":"ค่ายป่าชุมชน","zone":"highland","levels":2,"cost":[{"wood":18,"stone":8,"fiber":8,"money":700},{"wood":30,"stone":16,"fiber":14,"money":1500}],"forage_bonus":[2,5],"description":"เพิ่มทรัพยากรป่าและสมุนไพรโดยรักษาคะแนนสิ่งแวดล้อม"}
+  ],
+  "fish": [
+    {"id":"tilapia","name":"ปลานิล","rarity":"common","difficulty":0.25,"value":28,"seasons":[0,1,2,3],"weather":["clear","cloudy","light_rain"]},
+    {"id":"snakehead","name":"ปลาช่อน","rarity":"common","difficulty":0.38,"value":42,"seasons":[0,1,2,3],"weather":["cloudy","light_rain","heavy_rain"]},
+    {"id":"catfish","name":"ปลาดุก","rarity":"common","difficulty":0.32,"value":36,"seasons":[0,1,2,3],"weather":["cloudy","heavy_rain","storm"]},
+    {"id":"silver_barb","name":"ปลาตะเพียน","rarity":"uncommon","difficulty":0.48,"value":58,"seasons":[0,1,2],"weather":["clear","cool","light_rain"]},
+    {"id":"giant_gourami","name":"ปลาแรด","rarity":"uncommon","difficulty":0.58,"value":82,"seasons":[1,2],"weather":["clear","hot","cloudy"]},
+    {"id":"river_prawn","name":"กุ้งแม่น้ำ","rarity":"rare","difficulty":0.70,"value":135,"seasons":[1,2,3],"weather":["cool","cloudy","light_rain"]},
+    {"id":"golden_carp","name":"ปลาคาร์ปทอง","rarity":"legendary","difficulty":0.88,"value":420,"seasons":[3],"weather":["fog","cool"]}
+  ],
+  "recipes": [
+    {"id":"grilled_fish","name":"ปลาย่างสมุนไพร","requires":{"fish_any":1,"herb":1},"output":"meal_grilled_fish","value":85,"happiness":3},
+    {"id":"vegetable_soup","name":"ซุปผักสวน","requires":{"produce_any":3,"water_bottle":1},"output":"meal_vegetable_soup","value":72,"happiness":4},
+    {"id":"fish_curry","name":"แกงปลาผักสวน","requires":{"fish_any":1,"produce_any":2,"herb":2},"output":"meal_fish_curry","value":145,"happiness":7},
+    {"id":"pickled_vegetables","name":"ผักดองชุมชน","requires":{"produce_any":4,"water_bottle":1},"output":"processed_pickles","value":110,"happiness":2},
+    {"id":"seed_pack","name":"ชุดเมล็ดชุมชน","requires":{"produce_any":5,"fiber":2},"output":"processed_seed_pack","value":125,"knowledge":2}
+  ],
+  "town_levels": [
+    {"level":1,"name":"บ้านสวน","population":1,"reputation":0},
+    {"level":2,"name":"กลุ่มบ้านเกษตร","population":5,"reputation":10},
+    {"level":3,"name":"หมู่บ้านเรียนรู้","population":12,"reputation":25},
+    {"level":4,"name":"ชุมชนเกษตรยั่งยืน","population":24,"reputation":50},
+    {"level":5,"name":"เมืองสวนต้นแบบ","population":40,"reputation":90}
+  ],
+  "festivals": [
+    {"id":"harvest_day","name":"เทศกาลเก็บเกี่ยว","season":0,"day":14,"description":"นำผลผลิตมาแข่งขันคุณภาพและขายได้ราคาพิเศษ"},
+    {"id":"river_day","name":"วันสายน้ำ","season":1,"day":28,"description":"แข่งขันตกปลาและฟื้นฟูริมแม่น้ำ"},
+    {"id":"biodiversity_fair","name":"งานสวนมีชีวิต","season":2,"day":42,"description":"รับคะแนนจากสิ่งมีชีวิตที่ค้นพบและสวนปลอดสาร"},
+    {"id":"learning_fair","name":"มหกรรมสวนเรียนรู้","season":3,"day":56,"description":"นำผลทดลองและสมุดความรู้มาแลกรางวัล"}
+  ]
+}
