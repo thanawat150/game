@@ -9,11 +9,7 @@ public sealed class WorldExpansionDirectorTests
     [Fact]
     public void ExpansionInitializesRacesDistrictsLegendsRuinsAndHistory()
     {
-        WorldMap world = CreateCoastalWorld(64);
-        var simulation = new GrandSimulation(world, 10101);
-        ulong kingdomId = CreateKingdom(simulation, 18, 28, "Aurora", 16);
-        var living = new LivingWorldDirector(world, simulation, 20202, "Expansion Test");
-        var expansion = new WorldExpansionDirector(world, simulation, living, 30303);
+        (WorldMap world, GrandSimulation simulation, LivingWorldDirector living, WorldExpansionDirector expansion, ulong kingdomId, _) = CreateExpansion(10101, 16);
 
         Assert.True(expansion.State.KingdomRaces.ContainsKey(kingdomId));
         Assert.NotEmpty(expansion.State.CityDistricts);
@@ -27,12 +23,7 @@ public sealed class WorldExpansionDirectorTests
     [Fact]
     public void PlannedBuildingCompletesAndChangesPhysicalCity()
     {
-        WorldMap world = CreateCoastalWorld(64);
-        var simulation = new GrandSimulation(world, 11111);
-        ulong kingdomId = CreateKingdom(simulation, 18, 28, "Builders", 20);
-        ulong cityId = simulation.State.Kingdoms[kingdomId].CapitalId;
-        var living = new LivingWorldDirector(world, simulation, 22222);
-        var expansion = new WorldExpansionDirector(world, simulation, living, 33333);
+        (_, GrandSimulation simulation, LivingWorldDirector living, WorldExpansionDirector expansion, _, ulong cityId) = CreateExpansion(11111, 20);
         Assert.True(expansion.PlanBuilding(cityId, BuildingKind.Temple));
 
         AdvanceDays(simulation, living, expansion, 170);
@@ -46,12 +37,7 @@ public sealed class WorldExpansionDirectorTests
     [Fact]
     public void FaithUnlocksAndMiracleChangesCityState()
     {
-        WorldMap world = CreateCoastalWorld(64);
-        var simulation = new GrandSimulation(world, 12121);
-        ulong kingdomId = CreateKingdom(simulation, 18, 28, "Faith", 14);
-        ulong cityId = simulation.State.Kingdoms[kingdomId].CapitalId;
-        var living = new LivingWorldDirector(world, simulation, 23232);
-        var expansion = new WorldExpansionDirector(world, simulation, living, 34343);
+        (_, GrandSimulation simulation, LivingWorldDirector living, WorldExpansionDirector expansion, _, ulong cityId) = CreateExpansion(12121, 14);
         expansion.State.Faith.Faith = 100;
         expansion.State.Faith.Favor = 100;
         simulation.State.Settlements[cityId].Food = 5;
@@ -69,15 +55,9 @@ public sealed class WorldExpansionDirectorTests
     [Fact]
     public void CoastalCityCreatesFleetWithWaterPathState()
     {
-        WorldMap world = CreateCoastalWorld(64);
-        var simulation = new GrandSimulation(world, 13131);
-        ulong kingdomId = CreateKingdom(simulation, 18, 28, "Mariners", 18);
-        ulong cityId = simulation.State.Kingdoms[kingdomId].CapitalId;
-        SettlementState city = simulation.State.Settlements[cityId];
-        city.Wood = 200;
-        city.Gold = 100;
-        var living = new LivingWorldDirector(world, simulation, 24242);
-        var expansion = new WorldExpansionDirector(world, simulation, living, 35353);
+        (WorldMap world, GrandSimulation simulation, _, WorldExpansionDirector expansion, _, ulong cityId) = CreateExpansion(13131, 18);
+        simulation.State.Settlements[cityId].Wood = 200;
+        simulation.State.Settlements[cityId].Gold = 100;
 
         FleetState? fleet = expansion.CreateFleet(cityId, FleetMission.Explore);
 
@@ -90,12 +70,8 @@ public sealed class WorldExpansionDirectorTests
     [Fact]
     public void MageSpellUsesManaAndChangesWorld()
     {
-        WorldMap world = CreateCoastalWorld(64);
-        var simulation = new GrandSimulation(world, 14141);
-        ulong kingdomId = CreateKingdom(simulation, 22, 32, "Arcane", 12);
+        (WorldMap world, GrandSimulation simulation, _, WorldExpansionDirector expansion, ulong kingdomId, _) = CreateExpansion(14141, 12, 22);
         SimEntity mageEntity = simulation.State.Entities.Values.First(e => e.KingdomId == kingdomId);
-        var living = new LivingWorldDirector(world, simulation, 25252);
-        var expansion = new WorldExpansionDirector(world, simulation, living, 36363);
         expansion.State.Mages[mageEntity.Id] = new MageProfile
         {
             EntityId = mageEntity.Id,
@@ -116,16 +92,12 @@ public sealed class WorldExpansionDirectorTests
     [Fact]
     public void ExpansionSaveRoundTripPreservesAdvancedState()
     {
-        WorldMap world = CreateCoastalWorld(64);
-        var simulation = new GrandSimulation(world, 15151);
-        ulong kingdomId = CreateKingdom(simulation, 18, 28, "Archive", 16);
-        ulong cityId = simulation.State.Kingdoms[kingdomId].CapitalId;
-        var living = new LivingWorldDirector(world, simulation, 26262, "Archive World");
-        var expansion = new WorldExpansionDirector(world, simulation, living, 37373);
+        (WorldMap world, GrandSimulation simulation, LivingWorldDirector living, WorldExpansionDirector expansion, _, ulong cityId) = CreateExpansion(15151, 16);
         expansion.State.Faith.Faith = 123;
         expansion.State.Faith.Favor = 77;
         expansion.PlanBuilding(cityId, BuildingKind.MageTower);
         AdvanceDays(simulation, living, expansion, 40);
+        float faithBeforeSave = expansion.State.Faith.Faith;
 
         string json = expansion.SaveToJson();
         WorldExpansionDirector loaded = WorldExpansionDirector.LoadFromJson(world, simulation, living, json);
@@ -135,18 +107,14 @@ public sealed class WorldExpansionDirectorTests
         Assert.Equal(expansion.State.CityDistricts.Count, loaded.State.CityDistricts.Count);
         Assert.Equal(expansion.State.Ruins.Count, loaded.State.Ruins.Count);
         Assert.Equal(expansion.State.History.Count, loaded.State.History.Count);
-        Assert.Equal(123, loaded.State.Faith.Faith);
+        Assert.Equal(faithBeforeSave, loaded.State.Faith.Faith);
         Assert.Equal(expansion.State.CityDistricts[cityId].Buildings.Count, loaded.State.CityDistricts[cityId].Buildings.Count);
     }
 
     [Fact]
     public void HistoryAchievementsCampaignAndReportAdvance()
     {
-        WorldMap world = CreateCoastalWorld(64);
-        var simulation = new GrandSimulation(world, 16161);
-        CreateKingdom(simulation, 18, 28, "Chronicle", 24);
-        var living = new LivingWorldDirector(world, simulation, 27272, "Chronicle World");
-        var expansion = new WorldExpansionDirector(world, simulation, living, 38383);
+        (_, GrandSimulation simulation, LivingWorldDirector living, WorldExpansionDirector expansion, _, _) = CreateExpansion(16161, 24);
 
         AdvanceDays(simulation, living, expansion, 65);
         string report = expansion.GenerateHistoryReport();
@@ -161,11 +129,7 @@ public sealed class WorldExpansionDirectorTests
     [Fact]
     public void ModPackRoundTripAppliesValidatedRules()
     {
-        WorldMap world = CreateCoastalWorld(48);
-        var simulation = new GrandSimulation(world, 17171);
-        CreateKingdom(simulation, 18, 20, "Mods", 10);
-        var living = new LivingWorldDirector(world, simulation, 28282);
-        var expansion = new WorldExpansionDirector(world, simulation, living, 39393);
+        (WorldMap world, GrandSimulation simulation, LivingWorldDirector living, WorldExpansionDirector expansion, _, _) = CreateExpansion(17171, 10, 18, 48);
         expansion.State.ModRules.ConstructionSpeedMultiplier = 2.5f;
         expansion.State.ModRules.InitialRuinCount = 20;
 
@@ -176,6 +140,21 @@ public sealed class WorldExpansionDirectorTests
         Assert.Equal(2.5f, other.State.ModRules.ConstructionSpeedMultiplier);
         Assert.Equal(20, other.State.ModRules.InitialRuinCount);
         Assert.True(other.State.ModRules.EnableMagic);
+    }
+
+    private static (WorldMap World, GrandSimulation Simulation, LivingWorldDirector Living, WorldExpansionDirector Expansion, ulong KingdomId, ulong CityId) CreateExpansion(
+        long seed,
+        int population,
+        int x = 18,
+        int size = 64)
+    {
+        WorldMap world = CreateCoastalWorld(size);
+        var simulation = new GrandSimulation(world, seed);
+        ulong kingdomId = CreateKingdom(simulation, x, size / 2, $"Realm{seed}", population);
+        ulong cityId = simulation.State.Kingdoms[kingdomId].CapitalId;
+        var living = new LivingWorldDirector(world, simulation, seed + 1000, $"World {seed}");
+        var expansion = new WorldExpansionDirector(world, simulation, living, seed + 2000);
+        return (world, simulation, living, expansion, kingdomId, cityId);
     }
 
     private static void AdvanceDays(GrandSimulation simulation, LivingWorldDirector living, WorldExpansionDirector expansion, int days)
