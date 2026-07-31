@@ -27,7 +27,19 @@ jobs:
           dotnet-version: "8.0.x"
 
       - name: Compile Godot C# project with diagnostics
-        run: dotnet build WorldForge.csproj --configuration Release --verbosity normal
+        shell: bash
+        run: |
+          set -o pipefail
+          dotnet build WorldForge.csproj --configuration Release --verbosity normal 2>&1 | tee dotnet-build.log
+
+      - name: Upload compile diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: WorldForge-Compile-Diagnostics
+          path: dotnet-build.log
+          if-no-files-found: warn
+          retention-days: 3
 
       - name: Download Godot .NET editor
         shell: bash
@@ -52,16 +64,26 @@ jobs:
           set -euo pipefail
           "$GODOT_BIN" --headless --path "$GITHUB_WORKSPACE" --build-solutions --quit
 
-      - name: Run full expansion headless smoke test
+      - name: Run full release-candidate headless smoke test
         shell: bash
         run: |
           set -euo pipefail
           "$GODOT_BIN" --headless --path "$GITHUB_WORKSPACE" --quit-after 10 2>&1 | tee expansion-smoke.log
           grep -q "EXPANSION_SMOKE_OK" expansion-smoke.log
+          grep -q "RELEASE_CANDIDATE_READY" expansion-smoke.log
           if grep -E "SCRIPT ERROR|Unhandled exception|ERROR:.*C#" expansion-smoke.log; then
-            echo "Expansion smoke emitted a runtime error."
+            echo "Release-candidate smoke emitted a runtime error."
             exit 1
           fi
+
+      - name: Upload runtime diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: WorldForge-Runtime-Diagnostics
+          path: expansion-smoke.log
+          if-no-files-found: warn
+          retention-days: 3
 
       - name: Install .NET export templates
         shell: bash
@@ -91,7 +113,7 @@ jobs:
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
-          name: WorldForgePixelGods-Windows-LegendsCitiesFaith
+          name: WorldForgePixelGods-Windows-ReleaseCandidate
           path: builds/windows/
           if-no-files-found: error
           retention-days: 14
