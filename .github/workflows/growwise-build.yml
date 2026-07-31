@@ -1,0 +1,97 @@
+name: Build GrowWise Windows
+
+on:
+  push:
+    branches:
+      - main
+      - "agent/**"
+    paths:
+      - "GrowWise/**"
+      - ".github/workflows/growwise-build.yml"
+  pull_request:
+    paths:
+      - "GrowWise/**"
+      - ".github/workflows/growwise-build.yml"
+  workflow_dispatch:
+
+jobs:
+  test-and-export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Godot 4.6.3
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -L --fail --retry 3 \
+            -o godot.zip \
+            "https://github.com/godotengine/godot-builds/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip"
+          unzip -q godot.zip -d godot-bin
+          chmod +x godot-bin/Godot_v4.6.3-stable_linux.x86_64
+          echo "GODOT=$GITHUB_WORKSPACE/godot-bin/Godot_v4.6.3-stable_linux.x86_64" >> "$GITHUB_ENV"
+
+      - name: Import GrowWise project
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$GODOT" --headless --editor --path GrowWise --quit-after 8 2>&1 | tee import.log
+          if grep -E "SCRIPT ERROR|Parse Error|Failed to load script" import.log; then
+            exit 1
+          fi
+
+      - name: Run headless gameplay smoke test
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$GODOT" --headless --path GrowWise --quit-after 3 2>&1 | tee smoke.log
+          grep -q "GROWWISE_SMOKE_OK" smoke.log
+          if grep -E "SCRIPT ERROR|Parse Error|Failed to load script|ERROR:.*GDScript" smoke.log; then
+            exit 1
+          fi
+
+      - name: Install Windows export templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -L --fail --retry 3 \
+            -o templates.tpz \
+            "https://github.com/godotengine/godot-builds/releases/download/4.6.3-stable/Godot_v4.6.3-stable_export_templates.tpz"
+          rm -rf templates-unpacked
+          mkdir -p templates-unpacked
+          unzip -q templates.tpz -d templates-unpacked
+          mkdir -p "$HOME/.local/share/godot/export_templates/4.6.3.stable"
+          cp -R templates-unpacked/templates/. "$HOME/.local/share/godot/export_templates/4.6.3.stable/"
+
+      - name: Export Windows executable
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p GrowWise/builds/windows
+          "$GODOT" --headless --path GrowWise \
+            --export-release "Windows Desktop" \
+            GrowWise/builds/windows/GrowWise.exe 2>&1 | tee export.log
+          test -s GrowWise/builds/windows/GrowWise.exe
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: GrowWise-Diagnostics
+          path: |
+            import.log
+            smoke.log
+            export.log
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Upload Windows game
+        uses: actions/upload-artifact@v4
+        with:
+          name: GrowWise-Windows
+          path: GrowWise/builds/windows/
+          if-no-files-found: error
+          retention-days: 14
