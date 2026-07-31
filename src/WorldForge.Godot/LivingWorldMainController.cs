@@ -39,11 +39,14 @@ public sealed partial class LivingWorldMainController : Node2D
     private WorldMap? _world;
     private GrandSimulation? _simulation;
     private LivingWorldDirector? _director;
+    private WorldExpansionDirector? _expansion;
+    private GrandSimulation? _expansionBoundSimulation;
     private SimulationClock _clock = new();
     private SimulationBudgetOptions _budget = SimulationBudgetOptions.ForProfile(SimulationPerformanceProfile.Balanced, 1200);
 
     private WorldChunkRenderer _terrainRenderer = null!;
     private LivingWorldRenderer _livingRenderer = null!;
+    private WorldExpansionRenderer _expansionRenderer = null!;
     private BrushOverlay _brushOverlay = null!;
     private Camera2D _camera = null!;
     private CanvasLayer _gameLayer = null!;
@@ -168,11 +171,13 @@ public sealed partial class LivingWorldMainController : Node2D
 
     public override void _Ready()
     {
-        DisplayServer.WindowSetTitle("WorldForge: Pixel Gods — Living World & Management");
+        DisplayServer.WindowSetTitle("WorldForge: Pixel Gods — Legends, Cities & Faith");
         _terrainRenderer = new WorldChunkRenderer { Name = "TerrainRenderer", ZIndex = 0 };
         AddChild(_terrainRenderer);
         _livingRenderer = new LivingWorldRenderer { Name = "LivingWorldRenderer", ZIndex = 25 };
         AddChild(_livingRenderer);
+        _expansionRenderer = new WorldExpansionRenderer { Name = "WorldExpansionRenderer", ZIndex = 35 };
+        AddChild(_expansionRenderer);
         _brushOverlay = new BrushOverlay { Name = "BrushOverlay", ZIndex = 60, Visible = false };
         AddChild(_brushOverlay);
         _camera = new Camera2D { Name = "WorldCamera", Enabled = true, Position = new Vector2(512, 512) };
@@ -180,6 +185,7 @@ public sealed partial class LivingWorldMainController : Node2D
 
         BuildAudio();
         BuildGameInterface();
+        BuildExpansionInterface();
         BuildSetupInterface();
         BuildTutorial();
         ShowSetup();
@@ -190,7 +196,9 @@ public sealed partial class LivingWorldMainController : Node2D
         if (_simulation is null || _director is null || _world is null)
             return;
 
+        EnsureExpansionRuntime();
         _livingRenderer.AdvanceAnimation(delta);
+        _expansionRenderer.AdvanceAnimation(delta);
         float visualHours = (float)(delta * Math.Max(0.5, _clock.TimeScale) * 0.8);
         _director.AdvanceVisualTime(visualHours);
 
@@ -212,6 +220,7 @@ public sealed partial class LivingWorldMainController : Node2D
             _simulationTimer.Restart();
             _simulation.AdvanceDayBudgeted(_budget);
             _director.AdvanceDay();
+            _expansion?.AdvanceDay();
             _simulationTimer.Stop();
             _lastSimulationMs = _simulationTimer.Elapsed.TotalMilliseconds;
             _averageSimulationMs = _averageSimulationMs <= 0 ? _lastSimulationMs : _averageSimulationMs * 0.88 + _lastSimulationMs * 0.12;
@@ -221,11 +230,13 @@ public sealed partial class LivingWorldMainController : Node2D
         _pendingSimulationTicks = Math.Min(_pendingSimulationTicks, 30);
 
         UpdateCameraAwareRendering();
+        UpdateExpansionCamera();
         if (_renderDirty && _renderAccumulator >= 1.0 / Math.Max(1, _renderHz))
         {
             _renderAccumulator = 0;
             _renderDirty = false;
             _livingRenderer.Refresh();
+            _expansionRenderer.Refresh();
             _miniMap.Refresh();
         }
 
@@ -233,6 +244,7 @@ public sealed partial class LivingWorldMainController : Node2D
         {
             _uiAccumulator = 0;
             RefreshUi();
+            RefreshExpansionUi();
             UpdateAudio();
             UpdateScreenTint();
         }
@@ -275,6 +287,12 @@ public sealed partial class LivingWorldMainController : Node2D
             if (key.Keycode == Key.F9)
             {
                 LoadWorld();
+                GetViewport().SetInputAsHandled();
+                return;
+            }
+            if (key.Keycode == Key.F10)
+            {
+                ToggleExpansionPanel();
                 GetViewport().SetInputAsHandled();
                 return;
             }
