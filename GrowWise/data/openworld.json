@@ -1,0 +1,78 @@
+{
+  "bounds":{"x":-1600,"y":-1050,"w":3200,"h":2100},
+  "start":{"x":-180,"y":180},
+  "regions":[
+    {"id":"greenfield","name_th":"ทุ่งสวนเรียนรู้","name_en":"Greenfield Farm","rect":{"x":-520,"y":-260,"w":1040,"h":720},"color":"7fbf66","level":1,"description":"พื้นที่ฟาร์ม บ้าน และศูนย์เครื่องจักร"},
+    {"id":"riverside","name_th":"ริมน้ำสายคราม","name_en":"Blue Riverbank","rect":{"x":-1600,"y":-180,"w":780,"h":900},"color":"69aebc","level":2,"description":"ท่าเรือ จุดตกปลา และพื้นที่ชุ่มน้ำ"},
+    {"id":"village","name_th":"หมู่บ้านเมล็ดพันธุ์","name_en":"Seedling Village","rect":{"x":520,"y":-260,"w":1080,"h":760},"color":"d3b477","level":2,"description":"ตลาด ร้านค้า แล็บ และชุมชน"},
+    {"id":"forest","name_th":"ป่าชุมชนเขียวคราม","name_en":"Community Forest","rect":{"x":-400,"y":-1050,"w":1120,"h":700},"color":"4f8748","level":3,"description":"ไม้ สมุนไพร สิ่งมีชีวิต และจุดสำรวจ"},
+    {"id":"highland","name_th":"เนินแร่และต้นน้ำ","name_en":"Highland Source","rect":{"x":720,"y":-1050,"w":880,"h":700},"color":"91836c","level":5,"description":"เหมือง ต้นน้ำ และทรัพยากรหายาก"},
+    {"id":"wetland","name_th":"พื้นที่ลุ่มรับน้ำ","name_en":"Retention Wetland","rect":{"x":-820,"y":520,"w":1480,"h":530},"color":"7aa89a","level":4,"description":"บ่อรับน้ำ นกน้ำ และดินเค็มบางส่วน"}
+  ],
+  "roads":[
+    [[-250,160],[260,120],[650,90],[980,100]],
+    [[-250,160],[-620,130],[-1050,160],[-1300,260]],
+    [[120,40],[80,-300],[120,-560],[220,-760]],
+    [[650,90],[850,-240],[980,-560],[1120,-790]],
+    [[-180,300],[-240,560],[-120,790],[220,910]]
+  ],
+  "waterways":[
+    [[-1500,-120],[-1320,50],[-1220,260],[-1180,520],[-950,780]],
+    [[980,-980],[760,-760],[520,-500],[260,-160],[-40,180],[-220,580]]
+  ],
+  "points":[
+    {"id":"farm_gate","name_th":"ประตูสวน GrowWise","name_en":"GrowWise Farm Gate","type":"farm","x":-180,"y":180,"region":"greenfield","level":1,"action":"enter_farm","fast_travel":true,"description":"เข้าสู่แปลงปลูกแบบละเอียด"},
+    {"id":"machine_yard","name_th":"ศูนย์เครื่องจักรฟาร์ม","name_en":"Machinery Yard","type":"machinery","x":180,"y":250,"region":"greenfield","level":1,"action":"machinery","fast_travel":true,"description":"สร้าง อัปเกรด และซ่อมเครื่องจักร"},
+    {"id":"animal_barn","name_th":"โรงเรือนสัตว์","name_en":"Animal Barn","type":"animals","x":260,"y":-40,"region":"greenfield","level":2,"action":"animals","fast_travel":false,"description":"ดูแลสัตว์และเก็บผลผลิต"},
+    {"id":"village_square","name_th":"ลานหมู่บ้าน","name_en":"Village Square","type":"town","x":900,"y":110,"region":"village","level":2,"action":"town","fast_travel":true,"description":"ศูนย์กลางกิจกรรมและเทศกาล"},
+    {"id":"general_store","name_th":"ร้านค้าชุมชน","name_en":"General Store","type":"shop","x":730,"y":-60,"region":"village","level":2,"action":"shop","fast_travel":false,"description":"ซื้อเมล็ด เครื่องมือ และของใช้"},
+    {"id":"city_market","name_th":"ตลาดผลผลิต","name_en":"Produce Market","type":"market","x":1060,"y":-30,"region":"village","level":2,"action":"market","fast_travel":true,"description":"ขายผลผลิตและสินค้าแปรรูป"},
+    {"id":"soil_lab","name_th":"ห้องปฏิบัติการดิน","name_en":"Soil Laboratory","type":"lab","x":1170,"y":230,"region":"village","level":3,"action":"lab","fast_travel":true,"description":"ส่งตัวอย่างและดูความเหมาะสมพืช"},
+    {"id":"river_dock","name_th":"ท่าเรือริมน้ำ","name_en":"River Dock","type":"dock","x":-1250,"y":260,"region":"riverside","level":2,"action":"fishing","fast_travel":true,"description":"ตกปลาและซื้อเหยื่อ"},
+    {"id":"water_station","name_th":"สถานีจัดการน้ำ","name_en":"Water Station","type":"water","x":-930,"y":560,"region":"wetland","level":4,"action":"water","fast_travel":true,"description":"จัดการคลอง ประตูน้ำ ปั๊ม และบ่อรับน้ำ"},
+    {"id":"forest_camp","name_th":"ค่ายสำรวจป่าชุมชน","name_en":"Forest Camp","type":"forest","x":120,"y":-730,"region":"forest","level":3,"action":"explore","fast_travel":true,"description":"เก็บสมุนไพร ไม้ และสำรวจความหลากหลาย"},
+    {"id":"survey_site","name_th":"จุดเก็บตัวอย่างพื้นที่","name_en":"Survey Site","type":"survey","x":470,"y":-520,"region":"forest","level":3,"action":"survey","fast_travel":false,"description":"เก็บตัวอย่างดิน น้ำ และพืช"},
+    {"id":"highland_mine","name_th":"เหมืองชุมชน","name_en":"Community Mine","type":"mine","x":1180,"y":-760,"region":"highland","level":5,"action":"explore","fast_travel":true,"description":"หาแร่ หิน และเศษโลหะ"},
+    {"id":"headwater","name_th":"ต้นน้ำบนเนิน","name_en":"Highland Headwater","type":"spring","x":880,"y":-850,"region":"highland","level":5,"action":"survey","fast_travel":false,"description":"ตรวจคุณภาพน้ำและระบบต้นน้ำ"},
+    {"id":"processing_hub","name_th":"ศูนย์แปรรูปชุมชน","name_en":"Processing Hub","type":"processing","x":560,"y":320,"region":"village","level":4,"action":"processing","fast_travel":true,"description":"แปรรูปอาหารและสินค้าเพิ่มมูลค่า"}
+  ],
+  "resources":[
+    {"id":"wood_01","type":"wood","x":-220,"y":-650,"region":"forest"},
+    {"id":"wood_02","type":"wood","x":40,"y":-890,"region":"forest"},
+    {"id":"wood_03","type":"wood","x":340,"y":-740,"region":"forest"},
+    {"id":"herb_01","type":"herb","x":-60,"y":-520,"region":"forest"},
+    {"id":"herb_02","type":"herb","x":520,"y":-880,"region":"forest"},
+    {"id":"fiber_01","type":"fiber","x":-1040,"y":420,"region":"riverside"},
+    {"id":"fiber_02","type":"fiber","x":-1360,"y":80,"region":"riverside"},
+    {"id":"stone_01","type":"stone","x":960,"y":-680,"region":"highland"},
+    {"id":"stone_02","type":"stone","x":1360,"y":-850,"region":"highland"},
+    {"id":"scrap_01","type":"scrap","x":1260,"y":-520,"region":"highland"},
+    {"id":"mineral_01","type":"mineral","x":1460,"y":-720,"region":"highland"},
+    {"id":"water_plant_01","type":"herb","x":-500,"y":760,"region":"wetland"},
+    {"id":"water_plant_02","type":"fiber","x":180,"y":850,"region":"wetland"},
+    {"id":"clay_01","type":"clay","x":-300,"y":930,"region":"wetland"},
+    {"id":"wild_seed_01","type":"seed","x":-460,"y":80,"region":"greenfield"},
+    {"id":"wild_seed_02","type":"seed","x":420,"y":140,"region":"greenfield"}
+  ],
+  "npcs":[
+    {"id":"teacher","name_th":"ครูเมล็ดพันธุ์","name_en":"Seed Teacher","texture":0,"route":[[-120,100],[-40,-20],[80,60],[-120,100]],"region":"greenfield"},
+    {"id":"merchant","name_th":"แม่ค้าพิม","name_en":"Pim the Merchant","texture":1,"route":[[720,-30],[920,80],[1070,-20],[720,-30]],"region":"village"},
+    {"id":"researcher","name_th":"นักวิจัยต้น","name_en":"Ton the Researcher","texture":2,"route":[[1120,230],[980,260],[1170,230]],"region":"village"},
+    {"id":"fisher","name_th":"ลุงชาญ","name_en":"Uncle Charn","texture":3,"route":[[-1280,220],[-1180,350],[-1360,300],[-1280,220]],"region":"riverside"},
+    {"id":"ranger","name_th":"เจ้าหน้าที่ป่ามะลิ","name_en":"Mali the Ranger","texture":4,"route":[[80,-720],[340,-650],[-120,-560],[80,-720]],"region":"forest"},
+    {"id":"engineer","name_th":"ช่างน้ำวิน","name_en":"Win the Water Engineer","texture":5,"route":[[-900,560],[-620,730],[-980,820],[-900,560]],"region":"wetland"}
+  ],
+  "quests":[
+    {"id":"discover_three","title_th":"เปิดแผนที่ชุมชน","title_en":"Map the Community","kind":"discover","target":3,"reward_money":120,"reward_xp":40},
+    {"id":"forage_ten","title_th":"นักสำรวจทรัพยากร","title_en":"Resource Explorer","kind":"collect","target":10,"reward_money":180,"reward_xp":55},
+    {"id":"visit_lab","title_th":"จากพื้นที่สู่แล็บ","title_en":"Field to Lab","kind":"visit_lab","target":1,"reward_money":150,"reward_xp":50},
+    {"id":"catch_fish","title_th":"อาหารจากสายน้ำ","title_en":"Food from the River","kind":"fish","target":3,"reward_money":200,"reward_xp":60},
+    {"id":"visit_all","title_th":"รู้จักบ้านของเรา","title_en":"Know Our Home","kind":"discover","target":6,"reward_money":400,"reward_xp":120}
+  ],
+  "events":[
+    {"id":"merchant_day","name_th":"พ่อค้าเดินทางมาเยือน","name_en":"Traveling Merchant","mod":7,"offset":2},
+    {"id":"forest_bloom","name_th":"สมุนไพรป่าผลิบาน","name_en":"Forest Bloom","mod":9,"offset":4},
+    {"id":"river_abundance","name_th":"ปลาชุกชุมริมน้ำ","name_en":"River Abundance","mod":11,"offset":5},
+    {"id":"heavy_runoff","name_th":"น้ำหลากจากพื้นที่สูง","name_en":"Highland Runoff","mod":13,"offset":7}
+  ]
+}
