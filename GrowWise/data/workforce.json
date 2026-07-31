@@ -1,0 +1,19 @@
+{
+  "roles": [
+    {"id":"farmhand","name_th":"คนสวน","name_en":"Farmhand","unlock_level":1,"base_wage":28,"description":"พรวนดิน ปลูก รดน้ำ ดูแล และเก็บเกี่ยว"},
+    {"id":"irrigator","name_th":"ช่างน้ำ","name_en":"Irrigation Worker","unlock_level":2,"base_wage":34,"description":"ดูแลแปลงแห้ง ระบายน้ำ และช่วยระบบคลอง"},
+    {"id":"animal_keeper","name_th":"คนเลี้ยงสัตว์","name_en":"Animal Keeper","unlock_level":4,"base_wage":42,"description":"ดูแลสุขภาพสัตว์ เก็บผลผลิต และปุ๋ยคอก"},
+    {"id":"processor","name_th":"พนักงานแปรรูป","name_en":"Processor","unlock_level":5,"base_wage":46,"description":"แปรรูปอาหารและสินค้ามูลค่าเพิ่ม"},
+    {"id":"driver","name_th":"คนขับรถส่งของ","name_en":"Delivery Driver","unlock_level":6,"base_wage":52,"description":"ขนสินค้าไปขายในเมืองและดูแลเที่ยวรถ"},
+    {"id":"field_technician","name_th":"เจ้าหน้าที่สำรวจ","name_en":"Field Technician","unlock_level":7,"base_wage":58,"description":"ช่วยเก็บตัวอย่าง เร่งงานแล็บ และเพิ่มความรู้"}
+  ],
+  "names": ["มะลิ","ภูผา","ตะวัน","ข้าวหอม","น้ำฝน","ต้นกล้า","ใบชา","สายลม","พิมพ์","นนท์","ดาว","เมฆ","อิงฟ้า","เจเจ","พอใจ","ขุนเขา"],
+  "traits": [
+    {"id":"diligent","name_th":"ขยัน","name_en":"Diligent","productivity":0.12,"morale":2},
+    {"id":"careful","name_th":"รอบคอบ","name_en":"Careful","productivity":0.06,"quality":5},
+    {"id":"fast_learner","name_th":"เรียนรู้ไว","name_en":"Fast Learner","experience":0.35},
+    {"id":"friendly","name_th":"เข้ากับคนง่าย","name_en":"Friendly","morale":5},
+    {"id":"steady","name_th":"สม่ำเสมอ","name_en":"Steady","fatigue":-0.12},
+    {"id":"resourceful","name_th":"แก้ปัญหาเก่ง","name_en":"Resourceful","productivity":0.08,"quality":3}
+  ]
+}
