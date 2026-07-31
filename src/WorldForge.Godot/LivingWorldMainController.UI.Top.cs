@@ -41,7 +41,7 @@ public sealed partial class LivingWorldMainController : Node2D
         top.AddThemeConstantOverride("separation", 6);
         topPanel.AddChild(top);
 
-        _worldTitle = new Label { Text = "WorldForge", CustomMinimumSize = new Vector2(160, 0) };
+        _worldTitle = new Label { Text = "WorldForge", CustomMinimumSize = new Vector2(150, 0) };
         top.AddChild(_worldTitle);
         top.AddChild(CreateButton("โลกใหม่", ShowSetup));
 
@@ -54,15 +54,16 @@ public sealed partial class LivingWorldMainController : Node2D
 
         _autosaveEnabled = new CheckButton { Text = "Autosave", ButtonPressed = true };
         top.AddChild(_autosaveEnabled);
-        _autosaveMinutes = CreateSpin(1, 30, 1, 3, 58);
+        _autosaveMinutes = CreateSpin(1, 30, 1, 3, 54);
         top.AddChild(_autosaveMinutes);
 
         _pauseButton = CreateButton("หยุดเวลา", TogglePause);
         top.AddChild(_pauseButton);
         foreach ((string text, double speed) in new[] { ("x1", 1d), ("x2", 2d), ("x4", 4d), ("x8", 8d), ("MAX", 32d) })
             top.AddChild(CreateButton(text, () => SetSpeed(speed)));
+        top.AddChild(CreateButton("ตำนาน/ศรัทธา [F10]", ToggleExpansionPanel));
 
-        _searchInput = new LineEdit { PlaceholderText = "ค้นหาคน/เมือง/อาณาจักร", CustomMinimumSize = new Vector2(190, 0) };
+        _searchInput = new LineEdit { PlaceholderText = "ค้นหาคน/เมือง/อาณาจักร", CustomMinimumSize = new Vector2(175, 0) };
         _searchInput.TextSubmitted += _ => SearchAndFocus();
         top.AddChild(_searchInput);
         top.AddChild(CreateButton("ค้นหา", SearchAndFocus));
