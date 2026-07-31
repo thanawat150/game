@@ -38,18 +38,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          "$GODOT" --headless --editor --path GrowWise --quit-after 8 2>&1 | tee import.log
-          if grep -E "SCRIPT ERROR|Parse Error|Failed to load script" import.log; then
+          "$GODOT" --headless --editor --path GrowWise --quit-after 10 2>&1 | tee import.log
+          if grep -E "SCRIPT ERROR|Parse Error|Compile Error|Failed to load script" import.log; then
             exit 1
           fi
 
-      - name: Run headless gameplay smoke test
+      - name: Run complete gameplay and simulation smoke test
         shell: bash
         run: |
           set -euo pipefail
-          "$GODOT" --headless --path GrowWise --quit-after 3 2>&1 | tee smoke.log
+          "$GODOT" --headless --path GrowWise --quit-after 5 2>&1 | tee smoke.log
           grep -q "GROWWISE_SMOKE_OK" smoke.log
-          if grep -E "SCRIPT ERROR|Parse Error|Failed to load script|ERROR:.*GDScript" smoke.log; then
+          grep -q "GROWWISE_PHASES_2_5_OK" smoke.log
+          if grep -E "SCRIPT ERROR|Parse Error|Compile Error|Failed to load script|ERROR:.*GDScript" smoke.log; then
             exit 1
           fi
 
@@ -66,7 +67,7 @@ jobs:
           mkdir -p "$HOME/.local/share/godot/export_templates/4.6.3.stable"
           cp -R templates-unpacked/templates/. "$HOME/.local/share/godot/export_templates/4.6.3.stable/"
 
-      - name: Export Windows executable
+      - name: Export Windows portable package
         shell: bash
         run: |
           set -euo pipefail
@@ -77,6 +78,13 @@ jobs:
             --export-release "Windows Desktop" \
             "$EXPORT_FILE" 2>&1 | tee export.log
           test -s "$EXPORT_FILE"
+          cat > "$EXPORT_DIR/README_PLAY.txt" <<'EOF'
+          GrowWise: My Learning Garden
+          Run GrowWise.exe on Windows 11.
+          Controls: WASD/Arrow keys, mouse, Space pause, 1-5 crops, F1-F3 save slots.
+          The package is portable and does not require administrator access.
+          EOF
+          sha256sum "$EXPORT_FILE" > "$EXPORT_DIR/SHA256SUMS.txt"
 
       - name: Upload diagnostics
         if: always()
@@ -90,10 +98,10 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
 
-      - name: Upload Windows game
+      - name: Upload Windows portable game
         uses: actions/upload-artifact@v4
         with:
-          name: GrowWise-Windows
+          name: GrowWise-Windows-Complete
           path: GrowWise/builds/windows/
           if-no-files-found: error
           retention-days: 14
