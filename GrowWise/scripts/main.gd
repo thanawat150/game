@@ -299,7 +299,7 @@ func draw_hud()->void:
 	draw_string(f,Vector2(1028,254),"ดิน %d%%"%int(t.fertility),0,-1,17,GREEN)
 	draw_string(f,Vector2(1028,290),"พืช: "+(crop_name(t.crop) if String(t.crop)!="" else "ว่าง"),0,-1,17,INK)
 	for b in buttons:
-		var active:=String(b.id)==tool or (b.id=="ws" and tool=="seed" and seed=="water_spinach") or (b.id=="kale" and tool=="seed" and seed=="kale")
+		var active: bool = String(b.id)==tool or (b.id=="ws" and tool=="seed" and seed=="water_spinach") or (b.id=="kale" and tool=="seed" and seed=="kale")
 		panel(b.r,GOLD if active else CREAM);draw_texture_rect(b.i,Rect2(b.r.position+Vector2(18,3),Vector2(40,40)),false);draw_string(f,b.r.position+Vector2(7,62),b.t,1,62,13,INK)
 	draw_string(f,Vector2(18,602),"เมล็ด ผักบุ้ง %d | คะน้า %d    ผลผลิต ผักบุ้ง %d | คะน้า %d"%[inv.seed_water_spinach,inv.seed_kale,inv.produce_water_spinach,inv.produce_kale],0,-1,16,CREAM)
 	if msg_time>0:panel(Rect2(300,548,680,48),MIST);draw_string(f,Vector2(320,580),msg,1,640,18,INK)
