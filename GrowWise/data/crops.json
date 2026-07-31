@@ -1,0 +1,16 @@
+{
+  "water_spinach": {
+    "name_th": "ผักบุ้ง",
+    "growth_seconds": [0, 8, 16, 28, 42],
+    "ideal_water": 65,
+    "harvest_min": 2,
+    "harvest_max": 4
+  },
+  "kale": {
+    "name_th": "คะน้า",
+    "growth_seconds": [0, 10, 22, 38, 58],
+    "ideal_water": 55,
+    "harvest_min": 1,
+    "harvest_max": 3
+  }
+}

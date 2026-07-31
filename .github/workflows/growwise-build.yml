@@ -1,0 +1,122 @@
+name: Build GrowWise Windows
+
+on:
+  push:
+    branches:
+      - main
+      - "agent/**"
+    paths:
+      - "GrowWise/**"
+      - ".github/workflows/growwise-build.yml"
+  pull_request:
+    paths:
+      - "GrowWise/**"
+      - ".github/workflows/growwise-build.yml"
+  workflow_dispatch:
+
+jobs:
+  test-and-export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Godot 4.6.3
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -L --fail --retry 3 \
+            -o godot.zip \
+            "https://github.com/godotengine/godot-builds/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip"
+          unzip -q godot.zip -d godot-bin
+          chmod +x godot-bin/Godot_v4.6.3-stable_linux.x86_64
+          echo "GODOT=$GITHUB_WORKSPACE/godot-bin/Godot_v4.6.3-stable_linux.x86_64" >> "$GITHUB_ENV"
+
+      - name: Import GrowWise project
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$GODOT" --headless --editor --path GrowWise --quit-after 12 2>&1 | tee import.log
+          if grep -E "SCRIPT ERROR|Parse Error|Compile Error|Failed to load script" import.log; then
+            exit 1
+          fi
+
+      - name: Run complete gameplay and simulation smoke test
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$GODOT" --headless --path GrowWise --quit-after 6 2>&1 | tee smoke.log
+          grep -q "GROWWISE_SMOKE_OK" smoke.log
+          grep -q "GROWWISE_PHASES_2_5_OK" smoke.log
+          grep -q "GROWWISE_AUTOPLAY_OK" smoke.log
+          grep -q "GROWWISE_CRAFTING_ETA_INVENTORY_OK" smoke.log
+          if grep -E "SCRIPT ERROR|Parse Error|Compile Error|Failed to load script|ERROR:.*GDScript" smoke.log; then
+            exit 1
+          fi
+
+      - name: Install Windows export templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -L --fail --retry 3 \
+            -o templates.tpz \
+            "https://github.com/godotengine/godot-builds/releases/download/4.6.3-stable/Godot_v4.6.3-stable_export_templates.tpz"
+          rm -rf templates-unpacked
+          mkdir -p templates-unpacked
+          unzip -q templates.tpz -d templates-unpacked
+          mkdir -p "$HOME/.local/share/godot/export_templates/4.6.3.stable"
+          cp -R templates-unpacked/templates/. "$HOME/.local/share/godot/export_templates/4.6.3.stable/"
+
+      - name: Export Windows portable package
+        shell: bash
+        run: |
+          set -euo pipefail
+          EXPORT_DIR="$GITHUB_WORKSPACE/GrowWise/builds/windows"
+          EXPORT_FILE="$EXPORT_DIR/GrowWise.exe"
+          mkdir -p "$EXPORT_DIR"
+          "$GODOT" --headless --path "$GITHUB_WORKSPACE/GrowWise" \
+            --export-release "Windows Desktop" \
+            "$EXPORT_FILE" 2>&1 | tee export.log
+          test -s "$EXPORT_FILE"
+          cat > "$EXPORT_DIR/README_PLAY.txt" <<'EOF'
+          GrowWise: My Learning Garden — Visual Remaster & Auto Farming
+          Run GrowWise.exe on Windows 11.
+
+          Main controls:
+          - WASD / Arrow keys: move
+          - Mouse: select and use tools
+          - Space: pause time
+          - 1-5: choose crop
+          - F1-F3: choose save slot
+          - F4: cycle auto mode
+          - I: open full inventory
+          - C: open crafting
+
+          Auto modes: Off, Care Assist, Full Auto, Learning Auto.
+          The inventory lists the exact remaining quantity of every item.
+          Inspect a crop to see estimated time to every growth stage and harvest.
+          The package is portable and does not require administrator access.
+          EOF
+          sha256sum "$EXPORT_FILE" > "$EXPORT_DIR/SHA256SUMS.txt"
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: GrowWise-Remaster-Diagnostics
+          path: |
+            import.log
+            smoke.log
+            export.log
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Upload Windows portable game
+        uses: actions/upload-artifact@v4
+        with:
+          name: GrowWise-Windows-Remaster-Autoplay
+          path: GrowWise/builds/windows/
+          if-no-files-found: error
+          retention-days: 14
