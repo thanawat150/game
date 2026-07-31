@@ -1,0 +1,89 @@
+{
+  "materials": {
+    "wood": {"th":"ไม้","en":"Wood","category":"material"},
+    "stone": {"th":"หิน","en":"Stone","category":"material"},
+    "fiber": {"th":"เส้นใย","en":"Fiber","category":"material"},
+    "herb": {"th":"สมุนไพร","en":"Herb","category":"material"},
+    "scrap": {"th":"เศษโลหะ","en":"Scrap","category":"material"},
+    "glass": {"th":"แก้ว","en":"Glass","category":"material"},
+    "rubber": {"th":"ยาง","en":"Rubber","category":"material"},
+    "water_bottle": {"th":"ขวดน้ำ","en":"Water Bottle","category":"material"},
+    "dry_leaves": {"th":"ใบไม้แห้ง","en":"Dry Leaves","category":"material"},
+    "mineral": {"th":"แร่ธาตุ","en":"Mineral","category":"material"}
+  },
+  "recipes": [
+    {
+      "id":"bio_spray",
+      "th":"สเปรย์ชีวภาพ",
+      "en":"Bio Spray",
+      "description_th":"ลดแมลงและโรคในแปลง",
+      "description_en":"Reduces pests and disease.",
+      "output":{"bio_spray":2},
+      "ingredients":{"herb":3,"water_bottle":1}
+    },
+    {
+      "id":"organic_fertilizer",
+      "th":"ปุ๋ยอินทรีย์",
+      "en":"Organic Fertilizer",
+      "description_th":"เพิ่มความสมบูรณ์และธาตุอาหาร",
+      "description_en":"Restores soil and nutrients.",
+      "output":{"organic_fertilizer":2},
+      "ingredients":{"compost":1,"mineral":2}
+    },
+    {
+      "id":"compost_pack",
+      "th":"ปุ๋ยหมักเร่งด่วน",
+      "en":"Quick Compost",
+      "description_th":"เปลี่ยนเศษอินทรีย์เป็นปุ๋ยหมัก",
+      "description_en":"Turns organic matter into compost.",
+      "output":{"compost":2},
+      "ingredients":{"dry_leaves":3,"herb":1},
+      "organic_waste":2
+    },
+    {
+      "id":"scarecrow",
+      "th":"หุ่นไล่นก",
+      "en":"Scarecrow",
+      "description_th":"ลดโอกาสเกิดศัตรูพืชทุกวัน",
+      "description_en":"Lowers daily pest pressure.",
+      "output":{"upgrade_scarecrow":1},
+      "ingredients":{"wood":4,"fiber":3}
+    },
+    {
+      "id":"drip_kit",
+      "th":"ชุดน้ำหยด",
+      "en":"Drip Irrigation Kit",
+      "description_th":"เติมน้ำให้แปลงที่แห้งที่สุดวันละครั้ง",
+      "description_en":"Waters the driest plot once per day.",
+      "output":{"upgrade_drip_kit":1},
+      "ingredients":{"scrap":3,"rubber":2,"water_bottle":2}
+    },
+    {
+      "id":"seed_tray",
+      "th":"ถาดเพาะเมล็ด",
+      "en":"Seed Tray",
+      "description_th":"มีโอกาสคืนเมล็ดเมื่อปลูก",
+      "description_en":"May refund a seed after planting.",
+      "output":{"upgrade_seed_tray":1},
+      "ingredients":{"wood":2,"fiber":2,"compost":1}
+    },
+    {
+      "id":"weather_station",
+      "th":"สถานีอากาศจิ๋ว",
+      "en":"Mini Weather Station",
+      "description_th":"แสดงพยากรณ์อากาศวันถัดไป",
+      "description_en":"Shows tomorrow's forecast.",
+      "output":{"upgrade_weather_station":1},
+      "ingredients":{"scrap":3,"glass":2,"wood":1}
+    },
+    {
+      "id":"compost_bin",
+      "th":"ถังปุ๋ยหมัก",
+      "en":"Compost Bin",
+      "description_th":"เร่งการผลิตปุ๋ยหมักจากเศษอินทรีย์",
+      "description_en":"Accelerates compost production.",
+      "output":{"upgrade_compost_bin":1},
+      "ingredients":{"wood":4,"stone":3,"fiber":1}
+    }
+  ]
+}
