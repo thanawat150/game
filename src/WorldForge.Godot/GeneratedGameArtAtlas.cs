@@ -61,7 +61,7 @@ public enum GameArtEffect
     Anchor,
 }
 
-public sealed class GeneratedGameArtAtlas
+public sealed partial class GeneratedGameArtAtlas
 {
     public const int IconCell = 48;
     public const int CharacterCell = 48;
@@ -77,11 +77,11 @@ public sealed class GeneratedGameArtAtlas
 
     public GeneratedGameArtAtlas()
     {
-        IconsTexture = LoadPng(GeneratedGameArtData.IconsPngBase64, "icons");
-        CharactersTexture = LoadPng(GeneratedGameArtData.CharactersPngBase64, "characters");
-        PortraitsTexture = LoadPng(GeneratedGameArtData.PortraitsPngBase64, "portraits");
-        BuildingsTexture = LoadPng(GeneratedGameArtData.BuildingsPngBase64, "buildings");
-        EffectsTexture = LoadPng(GeneratedGameArtData.EffectsPngBase64, "effects");
+        IconsTexture = BuildIconsTexture();
+        CharactersTexture = BuildCharactersTexture();
+        PortraitsTexture = BuildPortraitsTexture();
+        BuildingsTexture = BuildBuildingsTexture();
+        EffectsTexture = BuildEffectsTexture();
     }
 
     public AtlasTexture Icon(GameIcon icon) => Slice(IconsTexture, IconRegion(icon));
@@ -200,14 +200,4 @@ public sealed class GeneratedGameArtAtlas
 
     private static AtlasTexture Slice(Texture2D atlas, Rect2 region)
         => new() { Atlas = atlas, Region = region };
-
-    private static ImageTexture LoadPng(string base64, string label)
-    {
-        byte[] bytes = Convert.FromBase64String(base64);
-        var image = new Image();
-        Error error = image.LoadPngFromBuffer(bytes);
-        if (error != Error.Ok)
-            throw new InvalidOperationException($"Unable to load generated {label} atlas: {error}");
-        return ImageTexture.CreateFromImage(image);
-    }
 }
