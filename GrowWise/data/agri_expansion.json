@@ -1,0 +1,51 @@
+{
+  "survey_areas": [
+    {"id":"farm_edge","name":"ขอบแปลงเดิม","level":1,"cost":0,"base":{"ph":6.3,"n":58,"p":46,"k":52,"organic":3.2,"drainage":62,"salinity":8},"finds":["fiber","dry_leaves","herb"]},
+    {"id":"riverside_soil","name":"ดินริมแม่น้ำ","level":4,"cost":25,"base":{"ph":6.8,"n":66,"p":54,"k":62,"organic":4.1,"drainage":48,"salinity":12},"finds":["clay","herb","bait"]},
+    {"id":"village_plain","name":"ที่ราบชุมชน","level":6,"cost":35,"base":{"ph":6.0,"n":48,"p":60,"k":55,"organic":2.7,"drainage":70,"salinity":6},"finds":["stone","fiber","wild_seed"]},
+    {"id":"highland_slope","name":"ลาดเนินป่า","level":9,"cost":50,"base":{"ph":5.5,"n":42,"p":38,"k":70,"organic":4.8,"drainage":86,"salinity":3},"finds":["stone","mineral","herb"]},
+    {"id":"coastal_lowland","name":"พื้นที่ลุ่มเค็ม","level":12,"cost":70,"base":{"ph":7.2,"n":38,"p":44,"k":68,"organic":2.4,"drainage":35,"salinity":58},"finds":["clay","mineral","salt"]}
+  ],
+  "lab_tests": [
+    {"id":"basic_soil","name":"ตรวจดินพื้นฐาน","cost":45,"days":1,"fields":["ph","n","p","k"],"description":"วิเคราะห์ pH และธาตุอาหารหลัก"},
+    {"id":"water_drainage","name":"ตรวจน้ำและการระบายน้ำ","cost":60,"days":1,"fields":["moisture","drainage","salinity"],"description":"ประเมินน้ำขัง การระบายน้ำ และความเค็ม"},
+    {"id":"complete_soil","name":"ตรวจดินฉบับสมบูรณ์","cost":120,"days":2,"fields":["ph","n","p","k","organic","drainage","salinity"],"description":"รายงานครบพร้อมคำแนะนำพืชและการปรับปรุงดิน"}
+  ],
+  "crop_requirements": {
+    "water_spinach":{"name":"ผักบุ้ง","ph":[5.5,7.2],"n":[50,90],"p":[35,80],"k":[40,85],"organic":[2.0,7.0],"drainage":[25,70],"salinity_max":25,"water":"high"},
+    "kale":{"name":"คะน้า","ph":[6.0,7.2],"n":[60,95],"p":[45,85],"k":[50,90],"organic":[3.0,7.0],"drainage":[55,90],"salinity_max":18,"water":"medium"},
+    "chili":{"name":"พริก","ph":[5.8,7.0],"n":[45,80],"p":[45,90],"k":[60,95],"organic":[2.5,7.0],"drainage":[65,95],"salinity_max":16,"water":"medium_low"},
+    "tomato":{"name":"มะเขือเทศ","ph":[5.8,7.0],"n":[50,85],"p":[55,95],"k":[65,100],"organic":[3.0,8.0],"drainage":[70,95],"salinity_max":14,"water":"medium"},
+    "cucumber":{"name":"แตงกวา","ph":[5.8,7.0],"n":[55,90],"p":[45,85],"k":[55,90],"organic":[3.0,8.0],"drainage":[60,90],"salinity_max":16,"water":"high"}
+  },
+  "animal_buildings": [
+    {"id":"coop","name":"เล้าไก่และเป็ด","zone":"homestead","levels":3,"capacity":[4,8,14],"cost":[{"wood":8,"fiber":4,"money":240},{"wood":14,"stone":5,"fiber":7,"money":620},{"wood":22,"stone":10,"scrap":4,"money":1300}]},
+    {"id":"barn","name":"โรงเรือนแพะและวัว","zone":"village","levels":3,"capacity":[3,6,10],"cost":[{"wood":14,"stone":8,"money":650},{"wood":24,"stone":15,"scrap":6,"money":1450},{"wood":38,"stone":26,"scrap":12,"money":2900}]},
+    {"id":"apiary","name":"แปลงเลี้ยงผึ้ง","zone":"riverside","levels":2,"capacity":[3,7],"cost":[{"wood":7,"fiber":6,"money":380},{"wood":14,"fiber":12,"glass":2,"money":920}]},
+    {"id":"feed_mill","name":"โรงผสมอาหารสัตว์","zone":"homestead","levels":2,"capacity":[1,2],"cost":[{"wood":10,"stone":5,"scrap":3,"money":480},{"wood":18,"stone":10,"scrap":7,"money":1100}]}
+  ],
+  "animals": [
+    {"id":"chicken","name":"ไก่ไข่","building":"coop","price":140,"feed":"grain_feed","feed_per_day":1,"product":"egg","product_name":"ไข่ไก่","product_days":1,"manure":1,"happiness_need":45},
+    {"id":"duck","name":"เป็ดไข่","building":"coop","price":170,"feed":"grain_feed","feed_per_day":1,"product":"duck_egg","product_name":"ไข่เป็ด","product_days":2,"manure":1,"happiness_need":45},
+    {"id":"goat","name":"แพะนม","building":"barn","price":620,"feed":"roughage_feed","feed_per_day":2,"product":"goat_milk","product_name":"นมแพะ","product_days":2,"manure":2,"happiness_need":55},
+    {"id":"cow","name":"โคนม","building":"barn","price":1350,"feed":"mixed_feed","feed_per_day":3,"product":"milk","product_name":"น้ำนมดิบ","product_days":2,"manure":3,"happiness_need":60},
+    {"id":"bee","name":"รังผึ้ง","building":"apiary","price":420,"feed":"flower_feed","feed_per_day":1,"product":"honey","product_name":"น้ำผึ้ง","product_days":3,"manure":0,"happiness_need":50}
+  ],
+  "feeds": [
+    {"id":"grain_feed","name":"อาหารเมล็ดธัญพืช","requires":{"produce_any":2,"fiber":1},"output":3},
+    {"id":"roughage_feed","name":"อาหารหยาบ","requires":{"dry_leaves":2,"fiber":2,"produce_any":1},"output":4},
+    {"id":"mixed_feed","name":"อาหารผสม","requires":{"produce_any":3,"mineral":1,"fiber":1},"output":4},
+    {"id":"flower_feed","name":"อาหารเสริมผึ้ง","requires":{"herb":2,"water_bottle":1},"output":3}
+  ],
+  "processing_recipes": [
+    {"id":"boiled_egg","name":"ไข่ต้มสมุนไพร","building":"kitchen","requires":{"egg":2,"herb":1},"output":"meal_boiled_egg","amount":1,"value":78},
+    {"id":"salted_duck_egg","name":"ไข่เค็ม","building":"workshop","requires":{"duck_egg":3,"salt":1,"water_bottle":1},"output":"processed_salted_egg","amount":2,"value":135},
+    {"id":"fresh_milk","name":"นมพาสเจอร์ไรส์","building":"workshop","requires":{"milk":2,"water_bottle":1},"output":"processed_milk","amount":2,"value":160},
+    {"id":"goat_cheese","name":"ชีสนมแพะ","building":"workshop","requires":{"goat_milk":3,"herb":1},"output":"processed_goat_cheese","amount":1,"value":245},
+    {"id":"honey_jar","name":"น้ำผึ้งบรรจุขวด","building":"workshop","requires":{"honey":2,"glass":1},"output":"processed_honey","amount":2,"value":220},
+    {"id":"manure_compost","name":"ปุ๋ยคอกจากสัตว์","building":"feed_mill","requires":{"manure":4,"dry_leaves":2},"output":"manure_compost","amount":2,"value":45},
+    {"id":"dried_fish","name":"ปลาแห้ง","building":"workshop","requires":{"fish_any":2,"salt":1},"output":"processed_dried_fish","amount":2,"value":190},
+    {"id":"vegetable_sauce","name":"ซอสผักสวน","building":"kitchen","requires":{"produce_any":4,"herb":1,"water_bottle":1},"output":"processed_vegetable_sauce","amount":2,"value":155},
+    {"id":"premium_meal","name":"ชุดอาหารสวนและฟาร์ม","building":"kitchen","requires":{"egg":1,"milk":1,"produce_any":2,"fish_any":1},"output":"meal_farm_set","amount":1,"value":320}
+  ]
+}

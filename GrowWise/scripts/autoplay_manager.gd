@@ -3,6 +3,7 @@ class_name GrowWiseAutoPlay
 
 const MODE_OFF: int = 0
 const MODE_ASSIST: int = 1
+const MODE_CARE: int = MODE_ASSIST
 const MODE_FULL: int = 2
 const MODE_LEARNING: int = 3
 
