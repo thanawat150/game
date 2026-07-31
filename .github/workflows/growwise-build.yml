@@ -70,11 +70,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p GrowWise/builds/windows
-          "$GODOT" --headless --path GrowWise \
+          EXPORT_DIR="$GITHUB_WORKSPACE/GrowWise/builds/windows"
+          EXPORT_FILE="$EXPORT_DIR/GrowWise.exe"
+          mkdir -p "$EXPORT_DIR"
+          "$GODOT" --headless --path "$GITHUB_WORKSPACE/GrowWise" \
             --export-release "Windows Desktop" \
-            GrowWise/builds/windows/GrowWise.exe 2>&1 | tee export.log
-          test -s GrowWise/builds/windows/GrowWise.exe
+            "$EXPORT_FILE" 2>&1 | tee export.log
+          test -s "$EXPORT_FILE"
 
       - name: Upload diagnostics
         if: always()
