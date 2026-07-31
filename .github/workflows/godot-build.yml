@@ -52,11 +52,16 @@ jobs:
           set -euo pipefail
           "$GODOT_BIN" --headless --path "$GITHUB_WORKSPACE" --build-solutions --quit
 
-      - name: Run living world headless smoke test
+      - name: Run full expansion headless smoke test
         shell: bash
         run: |
           set -euo pipefail
-          "$GODOT_BIN" --headless --path "$GITHUB_WORKSPACE" --quit-after 8
+          "$GODOT_BIN" --headless --path "$GITHUB_WORKSPACE" --quit-after 10 2>&1 | tee expansion-smoke.log
+          grep -q "EXPANSION_SMOKE_OK" expansion-smoke.log
+          if grep -E "SCRIPT ERROR|Unhandled exception|ERROR:.*C#" expansion-smoke.log; then
+            echo "Expansion smoke emitted a runtime error."
+            exit 1
+          fi
 
       - name: Install .NET export templates
         shell: bash
@@ -81,11 +86,12 @@ jobs:
             --export-release "Windows Desktop" \
             "$GITHUB_WORKSPACE/builds/windows/WorldForgePixelGods.exe"
           test -f builds/windows/WorldForgePixelGods.exe
+          test -f builds/windows/WorldForgePixelGods.pck
 
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
         with:
-          name: WorldForgePixelGods-Windows-LivingWorld
+          name: WorldForgePixelGods-Windows-LegendsCitiesFaith
           path: builds/windows/
           if-no-files-found: error
           retention-days: 14
