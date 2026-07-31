@@ -1,5 +1,7 @@
 extends Node2D
 
+const GrowWiseArtFactory = preload("res://scripts/art_factory.gd")
+
 const W:=8
 const H:=8
 const TW:=128.0
@@ -60,15 +62,10 @@ func _ready()->void:
 	queue_redraw()
 
 func load_atlas()->void:
-	var text:=""
-	for i in range(12):
-		var f:=FileAccess.open("res://assets/chunks/atlas_%02d.txt"%i,FileAccess.READ)
-		if f:text+=f.get_as_text().strip_edges()
-	var image:=Image.new()
-	if image.load_png_from_buffer(Marshalls.base64_to_raw(text))!=OK:
-		push_error("GrowWise atlas decode failed")
-		image=Image.create_empty(1024,512,false,Image.FORMAT_RGBA8)
+	var image:=GrowWiseArtFactory.build_atlas()
 	atlas=ImageTexture.create_from_image(image)
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("user://generated_assets"))
+	image.save_png("user://generated_assets/growwise_phase1_atlas.png")
 
 func region(x:int,y:int,w:int,h:int)->AtlasTexture:
 	var t:=AtlasTexture.new()
