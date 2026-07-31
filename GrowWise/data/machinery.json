@@ -1,0 +1,126 @@
+{
+  "energy": {
+    "base_capacity": 100,
+    "daily_recharge": 72
+  },
+  "machines": [
+    {
+      "id": "mini_tiller",
+      "name_th": "รถพรวนดินขนาดเล็ก",
+      "name_en": "Mini Tiller",
+      "description": "พรวนช่องว่างเพื่อเตรียมปลูกอัตโนมัติ",
+      "unlock_level": 1,
+      "max_level": 3,
+      "energy": [7, 5, 4],
+      "maintenance": [1, 2, 3],
+      "costs": [
+        {"wood": 4, "stone": 2, "scrap": 2, "money": 120},
+        {"wood": 7, "stone": 4, "scrap": 5, "money": 320},
+        {"wood": 10, "stone": 7, "scrap": 9, "rubber": 3, "money": 700}
+      ]
+    },
+    {
+      "id": "smart_sprinkler",
+      "name_th": "สปริงเกลอร์อัจฉริยะ",
+      "name_en": "Smart Sprinkler",
+      "description": "รดแปลงแห้งและระบายน้ำส่วนเกินไปยังบ่อ",
+      "unlock_level": 2,
+      "max_level": 3,
+      "energy": [6, 4, 3],
+      "maintenance": [1, 2, 3],
+      "costs": [
+        {"stone": 3, "scrap": 3, "rubber": 2, "money": 160},
+        {"stone": 6, "scrap": 6, "rubber": 4, "glass": 2, "money": 420},
+        {"stone": 9, "scrap": 10, "rubber": 7, "glass": 4, "money": 850}
+      ]
+    },
+    {
+      "id": "crop_drone",
+      "name_th": "โดรนตรวจสุขภาพพืช",
+      "name_en": "Crop Health Drone",
+      "description": "ตรวจแมลง โรค และช่วยลดความเสียหายก่อนลุกลาม",
+      "unlock_level": 3,
+      "max_level": 3,
+      "energy": [8, 6, 4],
+      "maintenance": [2, 3, 4],
+      "costs": [
+        {"scrap": 5, "glass": 2, "mineral": 2, "money": 260},
+        {"scrap": 9, "glass": 5, "mineral": 4, "money": 620},
+        {"scrap": 15, "glass": 8, "mineral": 7, "money": 1250}
+      ]
+    },
+    {
+      "id": "auto_harvester",
+      "name_th": "เครื่องเก็บเกี่ยวขนาดเล็ก",
+      "name_en": "Compact Harvester",
+      "description": "เก็บผลผลิตที่โตเต็มวัยโดยอัตโนมัติ",
+      "unlock_level": 4,
+      "max_level": 3,
+      "energy": [9, 7, 5],
+      "maintenance": [2, 3, 5],
+      "costs": [
+        {"wood": 5, "stone": 4, "scrap": 5, "money": 320},
+        {"wood": 8, "stone": 7, "scrap": 9, "rubber": 3, "money": 760},
+        {"wood": 12, "stone": 10, "scrap": 15, "rubber": 6, "money": 1450}
+      ]
+    },
+    {
+      "id": "feed_dispenser",
+      "name_th": "เครื่องให้อาหารสัตว์",
+      "name_en": "Feed Dispenser",
+      "description": "ดูแลสุขภาพสัตว์และเก็บผลผลิตค้างเมื่อพร้อม",
+      "unlock_level": 5,
+      "max_level": 2,
+      "energy": [6, 4],
+      "maintenance": [2, 3],
+      "costs": [
+        {"wood": 7, "stone": 3, "scrap": 3, "money": 260},
+        {"wood": 12, "stone": 6, "scrap": 7, "rubber": 3, "money": 680}
+      ]
+    },
+    {
+      "id": "processing_line",
+      "name_th": "สายการแปรรูปอัตโนมัติ",
+      "name_en": "Processing Line",
+      "description": "เลือกสูตรที่มีวัตถุดิบพร้อมและแปรรูปให้เอง",
+      "unlock_level": 6,
+      "max_level": 3,
+      "energy": [10, 8, 6],
+      "maintenance": [3, 5, 7],
+      "costs": [
+        {"wood": 8, "stone": 7, "scrap": 7, "money": 480},
+        {"wood": 14, "stone": 12, "scrap": 12, "glass": 4, "money": 1050},
+        {"wood": 22, "stone": 18, "scrap": 20, "glass": 8, "money": 2100}
+      ]
+    },
+    {
+      "id": "delivery_terminal",
+      "name_th": "ศูนย์สั่งรถส่งสินค้า",
+      "name_en": "Delivery Terminal",
+      "description": "เรียกรถขนสินค้ามูลค่าสูงเข้าเมืองเมื่อรถว่าง",
+      "unlock_level": 7,
+      "max_level": 2,
+      "energy": [5, 3],
+      "maintenance": [2, 4],
+      "costs": [
+        {"wood": 6, "stone": 5, "scrap": 6, "glass": 2, "money": 420},
+        {"wood": 12, "stone": 9, "scrap": 11, "glass": 5, "money": 980}
+      ]
+    },
+    {
+      "id": "bait_station",
+      "name_th": "สถานีผลิตเหยื่อตกปลา",
+      "name_en": "Bait Station",
+      "description": "ผลิตเหยื่อตกปลาจากสมุนไพรและเส้นใยโดยอัตโนมัติ",
+      "unlock_level": 1,
+      "max_level": 3,
+      "energy": [4, 3, 2],
+      "maintenance": [1, 1, 2],
+      "costs": [
+        {"wood": 3, "fiber": 2, "money": 70},
+        {"wood": 5, "fiber": 4, "scrap": 2, "money": 180},
+        {"wood": 8, "fiber": 6, "scrap": 4, "rubber": 2, "money": 420}
+      ]
+    }
+  ]
+}
