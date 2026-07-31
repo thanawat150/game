@@ -36,7 +36,7 @@ static func generate_candidates(data: Dictionary, day: int, farm_level: int, cou
 	for index: int in range(count):
 		var role_id: String = roles[rng.randi_range(0, roles.size() - 1)]
 		var role: Dictionary = role_definition(data, role_id)
-		var trait: Dictionary = traits[rng.randi_range(0, traits.size() - 1)] as Dictionary
+		var trait_data: Dictionary = traits[rng.randi_range(0, traits.size() - 1)] as Dictionary
 		var skill: int = rng.randi_range(35, 72) + mini(12, farm_level)
 		var wage: int = int(role.get("base_wage", 25)) + int(round(float(skill) / 9.0))
 		var name_index: int = posmod(index * 3 + rng.randi_range(0, names.size() - 1), names.size())
@@ -49,9 +49,9 @@ static func generate_candidates(data: Dictionary, day: int, farm_level: int, cou
 			"morale": rng.randi_range(68, 88),
 			"fatigue": rng.randi_range(0, 12),
 			"experience": 0,
-			"trait_id": String(trait.get("id", "")),
-			"trait_name_th": String(trait.get("name_th", "")),
-			"trait_name_en": String(trait.get("name_en", "")),
+			"trait_id": String(trait_data.get("id", "")),
+			"trait_name_th": String(trait_data.get("name_th", "")),
+			"trait_name_en": String(trait_data.get("name_en", "")),
 			"resting": false,
 			"actions_today": 0,
 			"last_action": ""
@@ -70,18 +70,18 @@ static func signing_cost(candidate: Dictionary) -> int:
 
 static func trait_definition(data: Dictionary, trait_id: String) -> Dictionary:
 	for value: Variant in array_value(data, "traits"):
-		var trait: Dictionary = value as Dictionary
-		if String(trait.get("id", "")) == trait_id:
-			return trait
+		var trait_data: Dictionary = value as Dictionary
+		if String(trait_data.get("id", "")) == trait_id:
+			return trait_data
 	return {}
 
 static func productivity(data: Dictionary, worker: Dictionary) -> float:
 	var skill: float = float(worker.get("skill", 50))
 	var morale: float = float(worker.get("morale", 70))
 	var fatigue: float = float(worker.get("fatigue", 0))
-	var trait: Dictionary = trait_definition(data, String(worker.get("trait_id", "")))
+	var trait_data: Dictionary = trait_definition(data, String(worker.get("trait_id", "")))
 	var value: float = 0.55 + skill / 100.0 * 0.55 + morale / 100.0 * 0.25 - fatigue / 100.0 * 0.35
-	value += float(trait.get("productivity", 0.0))
+	value += float(trait_data.get("productivity", 0.0))
 	return clampf(value, 0.35, 1.75)
 
 static func daily_action_limit(data: Dictionary, worker: Dictionary) -> int:
@@ -94,8 +94,8 @@ static func daily_action_limit(data: Dictionary, worker: Dictionary) -> int:
 
 static func apply_experience(data: Dictionary, worker: Dictionary, amount: int) -> Dictionary:
 	var result: Dictionary = worker.duplicate(true)
-	var trait: Dictionary = trait_definition(data, String(result.get("trait_id", "")))
-	var multiplier: float = 1.0 + float(trait.get("experience", 0.0))
+	var trait_data: Dictionary = trait_definition(data, String(result.get("trait_id", "")))
+	var multiplier: float = 1.0 + float(trait_data.get("experience", 0.0))
 	var experience: int = int(result.get("experience", 0)) + int(round(float(amount) * multiplier))
 	while experience >= 100 and int(result.get("skill", 1)) < 100:
 		experience -= 100
