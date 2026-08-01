@@ -1,0 +1,33 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/farming/farm_plot.gd" id="1"]
+
+[sub_resource type="BoxMesh" id="SoilMesh"]
+size = Vector3(1.8, 0.25, 1.8)
+
+[sub_resource type="BoxShape3D" id="SoilShape"]
+size = Vector3(1.8, 0.25, 1.8)
+
+[sub_resource type="StandardMaterial3D" id="BorderMaterial"]
+albedo_color = Color(0.25, 0.14, 0.08, 1)
+roughness = 0.95
+
+[node name="FarmPlot" type="StaticBody3D"]
+script = ExtResource("1")
+
+[node name="Border" type="MeshInstance3D" parent="."]
+mesh = SubResource("SoilMesh")
+material_override = SubResource("BorderMaterial")
+position = Vector3(0, 0.02, 0)
+scale = Vector3(1.08, 1, 1.08)
+
+[node name="SoilMesh" type="MeshInstance3D" parent="."]
+mesh = SubResource("SoilMesh")
+position = Vector3(0, 0.08, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SoilShape")
+position = Vector3(0, 0.08, 0)
+
+[node name="WorkPoint" type="Marker3D" parent="."]
+position = Vector3(0, 0.2, 1.35)

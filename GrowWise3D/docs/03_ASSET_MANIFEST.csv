@@ -1,0 +1,55 @@
+asset_id,category,asset_name,format,lod,texture_resolution,animation,status,priority,notes
+char_player_base,Character,Player base body,GLB,0-2,4K,Idle Walk Run Work,Planned,P0,Humanoid rig compatible with all outfits
+char_npc_seed_teacher,Character,Seed teacher,GLB,0-2,2K,Idle Walk Talk Inspect,Planned,P1,NPC 01
+char_npc_researcher,Character,Researcher Ton,GLB,0-2,2K,Idle Walk Talk Lab,Planned,P1,NPC 02
+char_npc_water_tech,Character,Water technician Win,GLB,0-2,2K,Idle Walk Talk Repair,Planned,P1,NPC 03
+outfit_farm,Outfit,Farming outfit,GLB,0-1,2K,None,Planned,P1,Modular clothing
+outfit_rain,Outfit,Rain suit,GLB,0-1,2K,None,Planned,P2,Waterproof material
+outfit_lab,Outfit,Research outfit,GLB,0-1,2K,None,Planned,P2,Lab bonus
+outfit_fishing,Outfit,Fishing outfit,GLB,0-1,2K,None,Planned,P2,Fishing bonus
+tool_hoe,Tool,Hoe,GLB,0-1,2K,Use,Planned,P0,Attach to tool socket
+tool_watering_can,Tool,Watering can,GLB,0-1,2K,Use,Planned,P0,Water VFX socket
+tool_seed_bag,Tool,Seed bag,GLB,0-1,1K,Use,Planned,P0,Plant animation
+tool_harvest_basket,Tool,Harvest basket,GLB,0-1,2K,Carry,Planned,P1,Carry animation
+tool_soil_sampler,Tool,Soil sampler,GLB,0-1,2K,Use,Planned,P2,Lab gameplay
+crop_water_spinach_s0,Crop,Water spinach seed,GLB,0-1,1K,None,Planned,P0,Stage 0
+crop_water_spinach_s1,Crop,Water spinach sprout,GLB,0-1,1K,Wind,Planned,P0,Stage 1
+crop_water_spinach_s2,Crop,Water spinach young,GLB,0-1,1K,Wind,Planned,P0,Stage 2
+crop_water_spinach_s3,Crop,Water spinach growth,GLB,0-1,2K,Wind,Planned,P0,Stage 3
+crop_water_spinach_s4,Crop,Water spinach mature,GLB,0-2,2K,Wind,Planned,P0,Stage 4
+crop_water_spinach_s5,Crop,Water spinach harvest,GLB,0-2,2K,Wind,Planned,P0,Stage 5
+crop_kale_s0,Crop,Kale seed,GLB,0-1,1K,None,Planned,P0,Stage 0
+crop_kale_s1,Crop,Kale sprout,GLB,0-1,1K,Wind,Planned,P0,Stage 1
+crop_kale_s2,Crop,Kale young,GLB,0-1,1K,Wind,Planned,P0,Stage 2
+crop_kale_s3,Crop,Kale growth,GLB,0-1,2K,Wind,Planned,P0,Stage 3
+crop_kale_s4,Crop,Kale mature,GLB,0-2,2K,Wind,Planned,P0,Stage 4
+crop_kale_s5,Crop,Kale harvest,GLB,0-2,2K,Wind,Planned,P0,Stage 5
+building_player_house_l1,Building,Player house level 1,GLB,0-2,4K,Door Window Lights,Planned,P1,Interior later
+building_storage_l1,Building,Storage shed level 1,GLB,0-2,4K,Door,Planned,P0,Vertical slice
+building_lab_l1,Building,Soil lab level 1,GLB,0-2,4K,Door Machines,Planned,P2,Post slice
+building_processing_l1,Building,Processing building level 1,GLB,0-2,4K,Machines,Planned,P2,Post slice
+prop_well,Prop,Water well,GLB,0-2,2K,Wheel Rope,Planned,P0,Vertical slice
+prop_water_tank,Prop,Water tank,GLB,0-2,2K,Valve,Planned,P1,Water storage
+prop_fence_wood,Prop,Wood fence kit,GLB,0-2,2K,None,Planned,P0,Modular 1m and 2m
+prop_gate_wood,Prop,Wood gate,GLB,0-2,2K,Open Close,Planned,P1,Farm entrance
+prop_crate,Prop,Produce crate,GLB,0-2,1K,None,Planned,P1,Stackable
+prop_sign_farm,Prop,Farm sign,GLB,0-2,2K,None,Planned,P1,Thai text via decal
+machine_tiller_l1,Machine,Compact tiller level 1,GLB,0-2,4K,Drive Work,Planned,P1,Auto farm actor
+machine_sprinkler_l1,Machine,Smart sprinkler level 1,GLB,0-2,2K,Rotate Spray,Planned,P1,Auto farm actor
+vehicle_pickup,Vehicle,Farm pickup,GLB,0-2,4K,Drive Suspension,Planned,P2,Logistics
+env_tree_mango_a,Vegetation,Mango tree A,GLB,0-3,2K,Wind,Planned,P1,Collision trunk only
+env_tree_shade_a,Vegetation,Shade tree A,GLB,0-3,2K,Wind,Planned,P1,Open world
+env_bush_a,Vegetation,Bush A,GLB,0-2,1K,Wind,Planned,P1,Scatter
+env_grass_cluster_a,Vegetation,Grass cluster A,GLB,0-2,1K,Wind,Planned,P1,MultiMesh
+env_flower_set_a,Vegetation,Wild flower set A,GLB,0-2,1K,Wind,Planned,P2,Biodiversity
+terrain_grass,Terrain,Grass terrain material,Material,NA,4K,None,Planned,P0,Albedo Normal Roughness
+tterrain_soil,Terrain,Farm soil material,Material,NA,4K,None,Planned,P0,Dry wet puddled variants
+terrain_path,Terrain,Dirt path material,Material,NA,4K,None,Planned,P0,Decal and tire marks
+vfx_water_spray,VFX,Water spray,GPUParticles3D,NA,NA,Loop,Planned,P0,Watering and sprinkler
+vfx_soil_dust,VFX,Soil dust,GPUParticles3D,NA,NA,Burst,Planned,P0,Tilling
+vfx_rain,VFX,Rain system,GPUParticles3D,NA,NA,Loop,Planned,P1,Light and heavy profiles
+sfx_footstep_grass,Audio,Grass footsteps,WAV,NA,NA,Loop set,Planned,P1,6 variations
+sfx_footstep_soil,Audio,Soil footsteps,WAV,NA,NA,Loop set,Planned,P1,6 variations
+sfx_hoe,Audio,Hoe impact,WAV,NA,NA,One shot,Planned,P0,4 variations
+sfx_water,Audio,Watering sound,WAV,NA,NA,Loop,Planned,P0,Tool and sprinkler
+music_farm_day,Audio,Farm daytime music,OGG,NA,NA,Loop,Planned,P2,3-5 minutes

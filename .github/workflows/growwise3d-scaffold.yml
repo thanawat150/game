@@ -1,0 +1,41 @@
+name: Build GrowWise3D Scaffold
+
+on:
+  pull_request:
+    paths:
+      - 'GrowWise3D/**'
+      - '.github/workflows/growwise3d-scaffold.yml'
+  workflow_dispatch:
+
+jobs:
+  import-and-smoke:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download Godot 4.6.3
+        run: |
+          curl -L --fail --retry 3 -o godot.zip https://github.com/godotengine/godot-builds/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip
+          unzip -q godot.zip -d godot-bin
+          chmod +x godot-bin/Godot_v4.6.3-stable_linux.x86_64
+          echo "GODOT=$GITHUB_WORKSPACE/godot-bin/Godot_v4.6.3-stable_linux.x86_64" >> "$GITHUB_ENV"
+      - name: Import project
+        run: |
+          set -o pipefail
+          "$GODOT" --headless --editor --path GrowWise3D --quit-after 12 2>&1 | tee growwise3d-import.log
+          ! grep -E "SCRIPT ERROR|Parse Error|Compile Error|Failed to load script" growwise3d-import.log
+      - name: Runtime smoke test
+        run: |
+          set -o pipefail
+          "$GODOT" --headless --path GrowWise3D --quit-after 5 2>&1 | tee growwise3d-smoke.log
+          grep -q "GROWWISE3D_SCAFFOLD_OK" growwise3d-smoke.log
+          grep -q "GROWWISE3D_WORLD_SCAFFOLD_OK" growwise3d-smoke.log
+          ! grep -E "SCRIPT ERROR|Parse Error|Compile Error|Failed to load script|ERROR:.*GDScript" growwise3d-smoke.log
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: GrowWise3D-Scaffold-Diagnostics
+          path: |
+            growwise3d-import.log
+            growwise3d-smoke.log
+          retention-days: 7
