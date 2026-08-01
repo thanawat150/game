@@ -83,6 +83,24 @@ Queued → Reserved → Traveling → Performing → Completed / Failed / Blocke
 - Farm Plot มาตรฐาน 2×2 เมตร
 - Origin ของแต่ละ Zone อยู่กึ่งกลางพื้นที่
 
+## Collision Layers
+
+1. World Static — terrain, buildings, fences, trees, rocks, wells and plot borders
+2. Player
+3. NPC
+4. Interactable areas
+5. Vehicle
+6. Water
+7. Trigger volumes
+
+Physical actors collide with World Static and the actor layers they need. Interaction queries use layer 4 for candidate discovery and layer 1 for line-of-sight blocking.
+
+## World Scene Ownership
+
+วัตถุหลักของโลกต้องเป็น `.tscn` แยกและเป็นเจ้าของ Geometry, Collision และ Material ของตัวเอง เช่น Terrain, PlayerHouse, StorageShed, Well, FenceSection, Tree และ Rock
+
+`world_bootstrap.gd` ทำได้เฉพาะอ่านข้อมูลตำแหน่ง, instantiate PackedScene, กำหนด ID/configuration และ parent instance ไปยัง root ที่ถูกต้อง ห้ามสร้าง Mesh, Collision Shape, Material, Navigation Behavior หรือ Gameplay Logic ส่วนใหญ่ใน bootstrap
+
 ## Naming Convention
 - Scene: PascalCase.tscn
 - Script: snake_case.gd

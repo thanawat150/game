@@ -1,0 +1,126 @@
+name: Build GrowWise3D Windows M1
+
+on:
+  pull_request:
+    paths:
+      - "GrowWise3D/**"
+      - ".github/workflows/growwise3d-windows.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-screenshot-export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Godot 4.6.3
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -L --fail --retry 3 -o godot.zip \
+            "https://github.com/godotengine/godot-builds/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip"
+          unzip -q godot.zip -d godot-bin
+          chmod +x godot-bin/Godot_v4.6.3-stable_linux.x86_64
+          echo "GODOT=$GITHUB_WORKSPACE/godot-bin/Godot_v4.6.3-stable_linux.x86_64" >> "$GITHUB_ENV"
+
+      - name: Import GrowWise3D
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$GODOT" --headless --editor --path GrowWise3D --import --quit 2>&1 | tee growwise3d-import.log
+          ! grep -E "SCRIPT ERROR|Parse Error|Compile Error|Failed to load script" growwise3d-import.log
+
+      - name: Run component contracts and M1 structural smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          : > growwise3d-m1-smoke.log
+          tests=(player_contract_test camera_contract_test world_contract_test time_of_day_contract_test farm_plot_contract_test interaction_los_test npc_navigation_contract_test hud_contract_test save_manager_contract_test runtime_marker_contract_test release_pipeline_contract_test m1_smoke_test)
+          for test in "${tests[@]}"; do
+            args=(--headless --path GrowWise3D --script "res://scripts/tests/$test.gd")
+            if [[ "$test" == "save_manager_contract_test" ]]; then
+              args+=(--user-data-dir "$RUNNER_TEMP/growwise3d-save-contract")
+            fi
+            "$GODOT" "${args[@]}" 2>&1 | tee -a growwise3d-m1-smoke.log
+          done
+          grep -q "GROWWISE3D_M1_TESTS_OK" growwise3d-m1-smoke.log
+          for marker in GROWWISE3D_SCAFFOLD_OK GROWWISE3D_WORLD_SCAFFOLD_OK GROWWISE3D_PLAYER_OK GROWWISE3D_CAMERA_OK GROWWISE3D_NAVIGATION_OK GROWWISE3D_NPC_OK GROWWISE3D_INTERACTION_OK GROWWISE3D_M1_FOUNDATION_OK; do
+            grep -q "$marker" growwise3d-m1-smoke.log
+          done
+          ! grep -E "SCRIPT ERROR|Parse Error|Compile Error|Failed to load script|ERROR:.*GDScript" growwise3d-m1-smoke.log
+
+      - name: Capture automated diagnostic screenshots
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq xvfb
+          mkdir -p GrowWise3D/builds/automated-screenshots
+          xvfb-run -a "$GODOT" --path GrowWise3D \
+            --script res://scripts/tests/capture_m1_screenshots.gd \
+            -- --output=res://builds/automated-screenshots
+          grep -q "AUTOMATED_SCREENSHOT_ARTIFACT_NOT_MANUAL_VISUAL_TEST" \
+            GrowWise3D/builds/automated-screenshots/MANIFEST.txt
+          for file in morning day evening night selected_plot npc_overview; do
+            test -s "GrowWise3D/builds/automated-screenshots/$file.png"
+          done
+
+      - name: Upload automated screenshot diagnostics
+        uses: actions/upload-artifact@v4
+        with:
+          name: GrowWise3D-M1-Automated-Screenshots
+          path: GrowWise3D/builds/automated-screenshots/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Install Godot 4.6.3 Windows export templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -L --fail --retry 3 -o templates.tpz \
+            "https://github.com/godotengine/godot-builds/releases/download/4.6.3-stable/Godot_v4.6.3-stable_export_templates.tpz"
+          unzip -q templates.tpz -d templates-unpacked
+          mkdir -p "$HOME/.local/share/godot/export_templates/4.6.3.stable"
+          cp -R templates-unpacked/templates/. "$HOME/.local/share/godot/export_templates/4.6.3.stable/"
+
+      - name: Export Windows portable build
+        shell: bash
+        run: |
+          set -euo pipefail
+          EXPORT_DIR="$GITHUB_WORKSPACE/GrowWise3D/builds/windows"
+          mkdir -p "$EXPORT_DIR"
+          "$GODOT" --headless --path GrowWise3D --export-release "Windows Desktop" "$EXPORT_DIR/GrowWise3D.exe" 2>&1 | tee growwise3d-export.log
+          test -s "$EXPORT_DIR/GrowWise3D.exe"
+          cat > "$EXPORT_DIR/README_PLAY.txt" <<'EOF'
+          GrowWise3D M1 — Playable 3D Foundation
+          Run GrowWise3D.exe on Windows 11 x86-64.
+          Controls: WASD/Arrow keys move, Shift runs, E interacts, mouse wheel zooms, R resets camera, T cycles time, F5 saves, F9 loads, F3 toggles diagnostics, Esc exits.
+          Save: user://growwise3d_save_v2.json (version 2), isolated from legacy GrowWise.
+          EOF
+          cd "$EXPORT_DIR"
+          sha256sum GrowWise3D.exe > SHA256SUMS.txt
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: GrowWise3D-M1-Diagnostics
+          path: |
+            growwise3d-import.log
+            growwise3d-m1-smoke.log
+            growwise3d-export.log
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Upload Windows M1 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GrowWise3D-Windows-M1-Foundation
+          path: GrowWise3D/builds/windows/
+          if-no-files-found: error
+          retention-days: 14

@@ -1,34 +1,99 @@
 extends Node3D
 class_name GrowWiseWorldBootstrap
 
+const PLACEMENT_PATH := "res://data/m1_world_placements.json"
 const FARM_PLOT_SCENE := preload("res://scenes/farming/FarmPlot.tscn")
-const NPC_SCENE := preload("res://scenes/npc/NPCBase.tscn")
+const SCENES: Dictionary[String, String] = {
+	"player_house": "res://scenes/world/PlayerHouse.tscn",
+	"storage_shed": "res://scenes/world/StorageShed.tscn",
+	"well": "res://scenes/world/Well.tscn",
+	"fence": "res://scenes/world/FenceSection.tscn",
+	"tree": "res://scenes/world/Tree.tscn",
+	"rock": "res://scenes/world/Rock.tscn",
+	"npc": "res://scenes/npc/NPCBase.tscn",
+}
+
+var placement_valid: bool = false
+
 
 func _ready() -> void:
-	build_farm_grid()
-	spawn_placeholder_npcs()
-	print("GROWWISE3D_WORLD_SCAFFOLD_OK")
+	var placement_data := _read_placement_data()
+	placement_valid = _place_world_instances(placement_data) and _place_farm_grid(placement_data.get("farm_grid", {}))
+	if placement_valid:
+		print("GROWWISE3D_WORLD_SCAFFOLD_OK")
+	else:
+		push_error("GROWWISE3D_WORLD_SCAFFOLD_FAILED")
 
-func build_farm_grid() -> void:
-	var plots_root := Node3D.new()
-	plots_root.name = "FarmPlots"
-	add_child(plots_root)
-	for y in range(4):
-		for x in range(6):
+
+func _read_placement_data() -> Dictionary:
+	var file := FileAccess.open(PLACEMENT_PATH, FileAccess.READ)
+	if file == null:
+		push_error("GrowWise3D placement data missing: %s" % PLACEMENT_PATH)
+		return {}
+	var parsed: Variant = JSON.parse_string(file.get_as_text())
+	if not parsed is Dictionary:
+		push_error("GrowWise3D placement data must be a JSON object")
+		return {}
+	return parsed
+
+
+func _place_world_instances(parsed: Dictionary) -> bool:
+	var valid := not parsed.is_empty()
+	for entry: Dictionary in parsed.get("instances", []):
+		var scene_id := str(entry.get("scene", ""))
+		if not SCENES.has(scene_id):
+			valid = false
+			push_warning("Unknown M1 placement scene: %s" % scene_id)
+			continue
+		var packed := load(SCENES[scene_id]) as PackedScene
+		if packed == null:
+			valid = false
+			push_error("Unable to load placement scene: %s" % SCENES[scene_id])
+			continue
+		var instance := packed.instantiate() as Node3D
+		instance.name = str(entry.get("name", scene_id)).validate_node_name()
+		instance.position = _array_to_vector3(entry.get("position", [0.0, 0.0, 0.0]))
+		instance.rotation_degrees.y = float(entry.get("rotation_y", 0.0))
+		for property_name: String in entry.get("properties", {}):
+			instance.set(property_name, entry["properties"][property_name])
+		if entry.has("route") and instance is GrowWiseNPCController:
+			var route: Array[Vector3] = []
+			for point in entry["route"]:
+				route.append(_array_to_vector3(point))
+			instance.set("patrol_points", route)
+		var parent := get_node_or_null(str(entry.get("parent", "Props")))
+		if parent == null:
+			valid = false
+			push_warning("Placement parent missing for %s" % instance.name)
+			instance.queue_free()
+			continue
+		parent.add_child(instance)
+	return valid
+
+
+func _place_farm_grid(config: Dictionary) -> bool:
+	var farm_root := get_node_or_null(str(config.get("parent", "Farm")))
+	if farm_root == null:
+		push_error("Farm grid placement parent missing")
+		return false
+	var rows := int(config.get("rows", 0))
+	var columns := int(config.get("columns", 0))
+	var spacing := _array_to_vector3(config.get("spacing", [0.0, 0.0, 0.0]))
+	var origin := _array_to_vector3(config.get("origin", [0.0, 0.0, 0.0]))
+	var id_prefix := str(config.get("id_prefix", "farm"))
+	if rows <= 0 or columns <= 0 or spacing.x <= 0.0 or spacing.z <= 0.0:
+		push_error("Farm grid placement data invalid")
+		return false
+	for row in range(rows):
+		for column in range(columns):
 			var plot := FARM_PLOT_SCENE.instantiate() as GrowWiseFarmPlot
-			plot.plot_id = "farm_%02d_%02d" % [x, y]
-			plot.position = Vector3((x - 2.5) * 2.15, 0.15, (y - 1.5) * 2.15)
-			plots_root.add_child(plot)
+			plot.plot_id = "%s_%02d_%02d" % [id_prefix, column, row]
+			plot.position = origin + Vector3(column * spacing.x, 0.0, row * spacing.z)
+			farm_root.add_child(plot)
+	return farm_root.get_child_count() == rows * columns
 
-func spawn_placeholder_npcs() -> void:
-	var npc_data := [
-		{"name":"ครูเมล็ดพันธุ์", "position":Vector3(-7, 0, 3), "route":[Vector3(-7,0,3), Vector3(-5,0,-3), Vector3(-2,0,-4)]},
-		{"name":"นักวิจัยต้น", "position":Vector3(7, 0, 2), "route":[Vector3(7,0,2), Vector3(5,0,-4), Vector3(3,0,4)]},
-		{"name":"ช่างน้ำวิน", "position":Vector3(0, 0, 7), "route":[Vector3(0,0,7), Vector3(-4,0,5), Vector3(4,0,5)]}
-	]
-	for entry in npc_data:
-		var npc := NPC_SCENE.instantiate() as GrowWiseNPCController
-		npc.display_name = str(entry["name"])
-		npc.position = entry["position"]
-		npc.patrol_points.assign(entry["route"])
-		add_child(npc)
+
+func _array_to_vector3(value: Variant) -> Vector3:
+	if not value is Array or value.size() < 3:
+		return Vector3.ZERO
+	return Vector3(float(value[0]), float(value[1]), float(value[2]))

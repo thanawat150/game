@@ -1,0 +1,17 @@
+{
+  "farm_grid": {"scene":"farm_plot","parent":"Farm","rows":4,"columns":6,"spacing":[2.35,0,2.35],"origin":[-5.875,0.14,-3.525],"id_prefix":"farm"},
+  "instances": [
+    {"scene":"player_house","name":"PlayerHouse","parent":"Buildings","position":[-12,0,-8],"rotation_y":12},
+    {"scene":"storage_shed","name":"StorageShed","parent":"Buildings","position":[11,0,-7],"rotation_y":-8},
+    {"scene":"well","name":"Well","parent":"Props","position":[10,0,5],"rotation_y":0},
+    {"scene":"tree","name":"MangoTreeWest","parent":"Props","position":[-14,0,5],"rotation_y":18},
+    {"scene":"tree","name":"ShadeTreeEast","parent":"Props","position":[14,0,9],"rotation_y":-24},
+    {"scene":"rock","name":"RockNorth","parent":"Props","position":[4,0,-13],"rotation_y":31},
+    {"scene":"fence","name":"FenceNorthA","parent":"Props","position":[-6,0,-15],"rotation_y":90},
+    {"scene":"fence","name":"FenceNorthB","parent":"Props","position":[0,0,-15],"rotation_y":90},
+    {"scene":"fence","name":"FenceNorthC","parent":"Props","position":[6,0,-15],"rotation_y":90},
+    {"scene":"npc","name":"SeedTeacher","parent":"NPCs","position":[-8,0,4],"rotation_y":0,"properties":{"npc_id":"seed_teacher","display_name":"ครูเมล็ดพันธุ์","dialogue_text":"ลองตรวจความชื้นของดินก่อนปลูกนะ","start_delay":0.4,"stop_duration":2.2},"route":[[-8,0,4],[-8,0,-5],[-4,0,-8]]},
+    {"scene":"npc","name":"SoilResearcher","parent":"NPCs","position":[8,0,3],"rotation_y":0,"properties":{"npc_id":"soil_researcher","display_name":"นักวิจัยดิน","dialogue_text":"ผลตรวจดินจะช่วยให้เลือกพืชได้เหมาะสมขึ้น","start_delay":1.3,"stop_duration":2.8},"route":[[8,0,3],[8,0,-6],[4,0,-9]]},
+    {"scene":"npc","name":"WaterTechnician","parent":"NPCs","position":[2,0,11],"rotation_y":0,"properties":{"npc_id":"water_technician","display_name":"ช่างจัดการน้ำ","dialogue_text":"พื้นที่ต่ำควรมีทางระบายน้ำสำรอง","start_delay":2.1,"stop_duration":2.4},"route":[[2,0,11],[10,0,8],[12,0,2]]}
+  ]
+}
