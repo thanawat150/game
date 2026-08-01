@@ -1,0 +1,31 @@
+task_id,milestone,priority,area,title,deliverable,depends_on,estimate_days,status
+GW3D-001,M0,P0,Project,Validate Godot project,Project imports without errors,,0.5,Ready
+GW3D-002,M0,P0,CI,Import and smoke workflow,GitHub Actions diagnostics,GW3D-001,0.5,Ready
+GW3D-003,M0,P0,Save,Define save v2,Schema and migration interface,,1,Planned
+GW3D-010,M1,P0,Player,Locomotion controller,Walk sprint gravity slope,GW3D-001,2,Scaffold
+GW3D-011,M1,P0,Player,Animation state interface,Idle walk run transitions,GW3D-010,2,Planned
+GW3D-012,M1,P0,Camera,Isometric follow camera,Smooth follow zoom reset,GW3D-010,1.5,Scaffold
+GW3D-013,M1,P0,World,Collision pass,Buildings trees fences plots,GW3D-001,2,Planned
+GW3D-014,M1,P0,UI,Responsive HUD shell,720p to 4K layout,GW3D-001,2,Planned
+GW3D-015,M1,P0,Interaction,Context interaction system,Prompt reachability execute,GW3D-010,3,Planned
+GW3D-020,M2,P0,Farming,FarmPlot domain bridge,24 plots mapped to simulation,GW3D-003,2,Scaffold
+GW3D-021,M2,P0,Farming,Work point routing,Actor travels before work,GW3D-015,2,Planned
+GW3D-022,M2,P0,Animation,Hoe plant water harvest,Animation events update domain,GW3D-011,5,Planned
+GW3D-023,M2,P1,Crops,Water spinach six stages,GLB and materials,GW3D-020,3,Planned
+GW3D-024,M2,P1,Crops,Kale six stages,GLB and materials,GW3D-020,3,Planned
+GW3D-025,M2,P1,VFX,Water and soil effects,Particles and audio,GW3D-022,2,Planned
+GW3D-030,M3,P0,Navigation,NavigationRegion setup,Baked walkable farm,GW3D-013,2,Planned
+GW3D-031,M3,P0,NPC,NPC state machine,Idle travel work talk,GW3D-030,3,Scaffold
+GW3D-032,M3,P1,NPC,Three daily schedules,Visible routines,GW3D-031,2,Planned
+GW3D-033,M3,P0,Automation,Auto task queue,Queued traveling working complete,GW3D-021,4,Planned
+GW3D-034,M3,P1,Machinery,Compact tiller actor,Visible auto tilling,GW3D-033,3,Planned
+GW3D-035,M3,P1,Machinery,Sprinkler actor,Visible auto watering,GW3D-033,2,Planned
+GW3D-040,M4,P1,Lighting,Day night controller,Sun exposure lights,,3,Planned
+GW3D-041,M4,P1,Weather,Rain profiles,Rain wetness sound,GW3D-040,3,Planned
+GW3D-042,M4,P1,Water,Drainage prototype,Channel pond flow effect,GW3D-020,5,Planned
+GW3D-050,M5,P0,Save,Save load implementation,Player plot NPC task persistence,GW3D-003,4,Planned
+GW3D-051,M5,P0,Save,Legacy migration,Backup and v1 import,GW3D-050,3,Planned
+GW3D-060,M6,P1,Assets,Replace placeholders,Production GLB and PBR,GW3D-022,10,Planned
+GW3D-061,M6,P1,Audio,Vertical slice audio,Music ambience SFX,GW3D-025,4,Planned
+GW3D-062,M6,P0,QA,30 minute playtest,Issue list and fixes,GW3D-050,3,Planned
+GW3D-063,M6,P0,Release,Windows candidate,Portable build and checksums,GW3D-062,1,Planned
