@@ -36,6 +36,10 @@ func _initialize() -> void:
 			_expect(node.is_class(REQUIRED_WORLD_NODES[path]), "%s must be %s" % [path, REQUIRED_WORLD_NODES[path]])
 	for scene_path in REQUIRED_SCENES:
 		_expect(ResourceLoader.exists(scene_path, "PackedScene"), "missing reusable scene %s" % scene_path)
+	var terrain := (load("res://scenes/world/Terrain.tscn") as PackedScene).instantiate()
+	var ground_mesh := terrain.get_node("Ground/Mesh") as MeshInstance3D
+	_expect(ground_mesh.mesh.get_aabb().size.x >= 72.0, "terrain must fill the widest isometric framing")
+	terrain.free()
 	var bootstrap := FileAccess.get_file_as_string("res://scripts/world/world_bootstrap.gd")
 	for token in BOOTSTRAP_FORBIDDEN:
 		_expect(bootstrap.find(token) == -1, "world_bootstrap contains forbidden token %s" % token)
