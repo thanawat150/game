@@ -1,33 +1,58 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=8 format=3]
 
-[ext_resource type="Script" path="res://scripts/farming/farm_plot.gd" id="1"]
-
+[ext_resource type="Script" path="res://scripts/farming/farm_plot.gd" id="1_plot"]
 [sub_resource type="BoxMesh" id="SoilMesh"]
-size = Vector3(1.8, 0.25, 1.8)
-
+size = Vector3(1.9,0.28,1.9)
 [sub_resource type="BoxShape3D" id="SoilShape"]
-size = Vector3(1.8, 0.25, 1.8)
-
+size = Vector3(2.05,0.34,2.05)
 [sub_resource type="StandardMaterial3D" id="BorderMaterial"]
-albedo_color = Color(0.25, 0.14, 0.08, 1)
-roughness = 0.95
+albedo_color = Color(0.18,0.09,0.035,1)
+roughness = 0.96
+[sub_resource type="BoxMesh" id="HighlightMesh"]
+size = Vector3(2.16,0.08,2.16)
+[sub_resource type="StandardMaterial3D" id="HighlightMaterial"]
+transparency = 1
+albedo_color = Color(0.34,0.82,0.38,0.44)
+emission_enabled = true
+emission = Color(0.12,0.5,0.16,1)
+emission_energy_multiplier = 0.7
+[sub_resource type="BoxShape3D" id="InteractionShape"]
+size = Vector3(2.35,1.0,2.35)
 
 [node name="FarmPlot" type="StaticBody3D"]
-script = ExtResource("1")
-
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("1_plot")
 [node name="Border" type="MeshInstance3D" parent="."]
+position = Vector3(0,0.08,0)
 mesh = SubResource("SoilMesh")
 material_override = SubResource("BorderMaterial")
-position = Vector3(0, 0.02, 0)
-scale = Vector3(1.08, 1, 1.08)
-
+scale = Vector3(1.08,1,1.08)
 [node name="SoilMesh" type="MeshInstance3D" parent="."]
+position = Vector3(0,0.13,0)
 mesh = SubResource("SoilMesh")
-position = Vector3(0, 0.08, 0)
-
+[node name="SelectionHighlight" type="MeshInstance3D" parent="."]
+position = Vector3(0,0.22,0)
+mesh = SubResource("HighlightMesh")
+material_override = SubResource("HighlightMaterial")
+visible = false
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+position = Vector3(0,0.12,0)
 shape = SubResource("SoilShape")
-position = Vector3(0, 0.08, 0)
-
-[node name="WorkPoint" type="Marker3D" parent="."]
-position = Vector3(0, 0.2, 1.35)
+[node name="InteractionArea" type="Area3D" parent="."]
+collision_layer = 4
+collision_mask = 0
+monitoring = false
+monitorable = true
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractionArea"]
+position = Vector3(0,0.45,0)
+shape = SubResource("InteractionShape")
+[node name="WorkPoints" type="Node3D" parent="."]
+[node name="North" type="Marker3D" parent="WorkPoints"]
+position = Vector3(0,0.2,-1.45)
+[node name="East" type="Marker3D" parent="WorkPoints"]
+position = Vector3(1.45,0.2,0)
+[node name="South" type="Marker3D" parent="WorkPoints"]
+position = Vector3(0,0.2,1.45)
+[node name="West" type="Marker3D" parent="WorkPoints"]
+position = Vector3(-1.45,0.2,0)
