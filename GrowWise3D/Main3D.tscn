@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/core/game_root.gd" id="1_root"]
 [ext_resource type="Script" path="res://scripts/world/world_bootstrap.gd" id="2_world"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="4_player"]
 [ext_resource type="Script" path="res://scripts/camera/camera_rig.gd" id="5_camera"]
 [ext_resource type="Script" path="res://scripts/world/time_of_day_controller.gd" id="6_time"]
+[ext_resource type="Script" path="res://scripts/interaction/interaction_manager.gd" id="7_interaction"]
 
 [sub_resource type="Environment" id="Environment_main"]
 background_mode = 1
@@ -76,6 +77,9 @@ far = 180.0
 
 [node name="TimeOfDayController" type="Node" parent="Systems"]
 script = ExtResource("6_time")
+
+[node name="InteractionManager" type="Node" parent="Systems"]
+script = ExtResource("7_interaction")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
