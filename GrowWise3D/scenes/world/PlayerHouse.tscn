@@ -1,0 +1,34 @@
+[gd_scene load_steps=7 format=3]
+[sub_resource type="BoxMesh" id="Walls"]
+size = Vector3(6,3.4,5)
+[sub_resource type="BoxShape3D" id="WallsShape"]
+size = Vector3(6,3.4,5)
+[sub_resource type="PrismMesh" id="Roof"]
+size = Vector3(6.8,2,5.8)
+[sub_resource type="StandardMaterial3D" id="WallMat"]
+albedo_color = Color(0.55,0.42,0.29,1)
+roughness = 0.84
+[sub_resource type="StandardMaterial3D" id="RoofMat"]
+albedo_color = Color(0.22,0.08,0.045,1)
+roughness = 0.88
+[sub_resource type="BoxMesh" id="Door"]
+size = Vector3(1.2,2.2,0.12)
+[node name="PlayerHouse" type="StaticBody3D"]
+collision_layer = 1
+collision_mask = 0
+[node name="Walls" type="MeshInstance3D" parent="."]
+position = Vector3(0,1.7,0)
+mesh = SubResource("Walls")
+material_override = SubResource("WallMat")
+[node name="Roof" type="MeshInstance3D" parent="."]
+position = Vector3(0,4.15,0)
+rotation_degrees = Vector3(0,0,90)
+mesh = SubResource("Roof")
+material_override = SubResource("RoofMat")
+[node name="Door" type="MeshInstance3D" parent="."]
+position = Vector3(0,1.1,2.56)
+mesh = SubResource("Door")
+material_override = SubResource("RoofMat")
+[node name="Collision" type="CollisionShape3D" parent="."]
+position = Vector3(0,1.7,0)
+shape = SubResource("WallsShape")

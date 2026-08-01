@@ -1,0 +1,13 @@
+{
+  "instances": [
+    {"scene":"player_house","name":"PlayerHouse","parent":"Buildings","position":[-12,0,-8],"rotation_y":12},
+    {"scene":"storage_shed","name":"StorageShed","parent":"Buildings","position":[11,0,-7],"rotation_y":-8},
+    {"scene":"well","name":"Well","parent":"Props","position":[10,0,5],"rotation_y":0},
+    {"scene":"tree","name":"MangoTreeWest","parent":"Props","position":[-14,0,5],"rotation_y":18},
+    {"scene":"tree","name":"ShadeTreeEast","parent":"Props","position":[14,0,9],"rotation_y":-24},
+    {"scene":"rock","name":"RockNorth","parent":"Props","position":[4,0,-13],"rotation_y":31},
+    {"scene":"fence","name":"FenceNorthA","parent":"Props","position":[-6,0,-15],"rotation_y":90},
+    {"scene":"fence","name":"FenceNorthB","parent":"Props","position":[0,0,-15],"rotation_y":90},
+    {"scene":"fence","name":"FenceNorthC","parent":"Props","position":[6,0,-15],"rotation_y":90}
+  ]
+}
