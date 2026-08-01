@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scripts/core/game_root.gd" id="1_root"]
 [ext_resource type="Script" path="res://scripts/world/world_bootstrap.gd" id="2_world"]
@@ -8,6 +8,8 @@
 [ext_resource type="Script" path="res://scripts/world/time_of_day_controller.gd" id="6_time"]
 [ext_resource type="Script" path="res://scripts/interaction/interaction_manager.gd" id="7_interaction"]
 [ext_resource type="Script" path="res://scripts/world/navigation_baker.gd" id="8_navigation"]
+[ext_resource type="Script" path="res://scripts/debug/diagnostics.gd" id="9_diagnostics"]
+[ext_resource type="PackedScene" path="res://scenes/ui/HUD.tscn" id="10_hud"]
 
 [sub_resource type="Environment" id="Environment_main"]
 background_mode = 1
@@ -93,13 +95,9 @@ script = ExtResource("6_time")
 [node name="InteractionManager" type="Node" parent="Systems"]
 script = ExtResource("7_interaction")
 
+[node name="Diagnostics" type="Node" parent="Systems"]
+script = ExtResource("9_diagnostics")
+
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="UI" type="Control" parent="CanvasLayer"]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
+[node name="UI" parent="CanvasLayer" instance=ExtResource("10_hud")]

@@ -33,6 +33,7 @@ var talk_target: Node3D
 
 
 func _ready() -> void:
+	add_to_group("growwise_npc")
 	navigation_agent.path_desired_distance = 0.35
 	navigation_agent.target_desired_distance = 0.45
 	navigation_agent.avoidance_enabled = true

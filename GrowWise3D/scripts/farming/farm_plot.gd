@@ -18,6 +18,7 @@ signal plot_changed(plot_id: String, snapshot: Dictionary)
 
 
 func _ready() -> void:
+	add_to_group("growwise_plot")
 	refresh_visual()
 	set_selected(false)
 
