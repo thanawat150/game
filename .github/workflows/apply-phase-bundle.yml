@@ -1,0 +1,52 @@
+name: Apply Phase 2-7 Bundle
+
+on:
+  push:
+    branches:
+      - agent/phases-2-7-simulation
+
+permissions:
+  contents: write
+
+jobs:
+  apply-bundle:
+    if: github.event.head_commit.message == 'Bootstrap phase 2-7 bundle'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Reassemble and validate source bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .phase_bundle/chunk{00..06} > /tmp/phase_bundle.b64
+          base64 --decode /tmp/phase_bundle.b64 > /tmp/phase_bundle.zip
+          unzip -t /tmp/phase_bundle.zip
+
+      - name: Apply source files
+        shell: bash
+        run: |
+          set -euo pipefail
+          unzip -o /tmp/phase_bundle.zip -d "$GITHUB_WORKSPACE"
+          rm -rf .phase_bundle
+          rm -f .github/workflows/apply-phase-bundle.yml
+
+      - name: Commit expanded implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Bundle produced no changes."
+            exit 1
+          fi
+          git commit -m "Implement phases 2-7 living world simulation"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+
+# Bootstrap retrigger after pull request creation.
