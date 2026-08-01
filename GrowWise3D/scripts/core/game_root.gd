@@ -53,7 +53,8 @@ func validate_foundation() -> bool:
 
 func _announce_validated_systems() -> void:
 	_emit_marker("GROWWISE3D_SCAFFOLD_OK")
-	if get_node_or_null("World3D") is Node3D:
+	var world := get_node_or_null("World3D")
+	if world != null and bool(world.get("placement_valid")):
 		_emit_marker("GROWWISE3D_WORLD_SCAFFOLD_OK")
 	if _has_player_contract():
 		_emit_marker("GROWWISE3D_PLAYER_OK")

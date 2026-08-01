@@ -33,6 +33,13 @@ func _run() -> void:
 	if not _valid_v2(TEST_PATH + ".bak"):
 		_fail("backup must validate")
 		return
+	var interrupted := FileAccess.open(TEST_PATH + ".previous", FileAccess.WRITE)
+	interrupted.store_string(FileAccess.get_file_as_string(TEST_PATH))
+	interrupted.close()
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(TEST_PATH))
+	if manager.load_game() != OK or not _valid_v2(TEST_PATH):
+		_fail("missing primary must recover validated interrupted .previous")
+		return
 	var partial := FileAccess.open(TEST_PATH, FileAccess.WRITE)
 	partial.store_string(JSON.stringify({"save_version":2, "player":{"position":[1,0,2]}}))
 	partial.close()

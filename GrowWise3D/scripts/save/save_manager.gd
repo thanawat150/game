@@ -33,6 +33,9 @@ func new_game() -> void:
 
 
 func save_game() -> Error:
+	var interrupted_error := _recover_interrupted_primary()
+	if interrupted_error != OK and interrupted_error != ERR_DOES_NOT_EXIST:
+		return interrupted_error
 	var snapshot := _collect_snapshot()
 	var temporary_path := save_path + ".tmp"
 	var write_error := _write_text(temporary_path, JSON.stringify(snapshot, "  "))
@@ -58,7 +61,7 @@ func save_game() -> Error:
 
 
 func load_game() -> Error:
-	if not FileAccess.file_exists(save_path):
+	if not FileAccess.file_exists(save_path) and _recover_interrupted_primary() != OK:
 		_warn("ยังไม่มีไฟล์บันทึก GrowWise3D")
 		return ERR_FILE_NOT_FOUND
 	var snapshot := _read_validated(save_path, true)
@@ -199,7 +202,9 @@ func _promote_temporary(temporary: String, destination: String) -> Error:
 		if FileAccess.file_exists(destination) and not _read_validated(destination).is_empty():
 			DirAccess.remove_absolute(ProjectSettings.globalize_path(previous))
 		else:
-			return ERR_ALREADY_EXISTS
+			var recover_error := DirAccess.rename_absolute(ProjectSettings.globalize_path(previous), ProjectSettings.globalize_path(destination))
+			if recover_error != OK:
+				return recover_error
 	if FileAccess.file_exists(previous):
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(previous))
 	if FileAccess.file_exists(destination):
@@ -219,6 +224,17 @@ func _promote_temporary(temporary: String, destination: String) -> Error:
 	if FileAccess.file_exists(previous):
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(previous))
 	return OK
+
+
+func _recover_interrupted_primary() -> Error:
+	if FileAccess.file_exists(save_path):
+		return OK
+	var previous := save_path + ".previous"
+	if not FileAccess.file_exists(previous):
+		return ERR_DOES_NOT_EXIST
+	if _read_validated(previous).is_empty():
+		return ERR_INVALID_DATA
+	return DirAccess.rename_absolute(ProjectSettings.globalize_path(previous), ProjectSettings.globalize_path(save_path))
 
 
 func _write_text(path: String, content: String) -> Error:

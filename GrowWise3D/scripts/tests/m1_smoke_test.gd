@@ -37,7 +37,11 @@ func _run() -> void:
 	var root := packed.instantiate()
 	root.name = "GameRoot"
 	get_root().add_child(root)
-	for frame in range(10):
+	var navigation := root.get_node_or_null("World3D/Navigation") as NavigationRegion3D
+	var navigation_deadline := Time.get_ticks_msec() + 5000
+	while navigation != null and navigation.has_method("get_navigation_diagnostics") \
+		and str(navigation.get_navigation_diagnostics().get("status", "")) != "ready" \
+		and Time.get_ticks_msec() < navigation_deadline:
 		await process_frame
 	_check_required_nodes(root)
 	_check_counts_and_ids(root)

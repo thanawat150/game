@@ -13,12 +13,16 @@ const SCENES: Dictionary[String, String] = {
 	"npc": "res://scenes/npc/NPCBase.tscn",
 }
 
+var placement_valid: bool = false
+
 
 func _ready() -> void:
 	var placement_data := _read_placement_data()
-	_place_world_instances(placement_data)
-	_place_farm_grid(placement_data.get("farm_grid", {}))
-	print("GROWWISE3D_WORLD_SCAFFOLD_OK")
+	placement_valid = _place_world_instances(placement_data) and _place_farm_grid(placement_data.get("farm_grid", {}))
+	if placement_valid:
+		print("GROWWISE3D_WORLD_SCAFFOLD_OK")
+	else:
+		push_error("GROWWISE3D_WORLD_SCAFFOLD_FAILED")
 
 
 func _read_placement_data() -> Dictionary:
@@ -33,14 +37,17 @@ func _read_placement_data() -> Dictionary:
 	return parsed
 
 
-func _place_world_instances(parsed: Dictionary) -> void:
+func _place_world_instances(parsed: Dictionary) -> bool:
+	var valid := not parsed.is_empty()
 	for entry: Dictionary in parsed.get("instances", []):
 		var scene_id := str(entry.get("scene", ""))
 		if not SCENES.has(scene_id):
+			valid = false
 			push_warning("Unknown M1 placement scene: %s" % scene_id)
 			continue
 		var packed := load(SCENES[scene_id]) as PackedScene
 		if packed == null:
+			valid = false
 			push_error("Unable to load placement scene: %s" % SCENES[scene_id])
 			continue
 		var instance := packed.instantiate() as Node3D
@@ -56,28 +63,34 @@ func _place_world_instances(parsed: Dictionary) -> void:
 			instance.set("patrol_points", route)
 		var parent := get_node_or_null(str(entry.get("parent", "Props")))
 		if parent == null:
+			valid = false
 			push_warning("Placement parent missing for %s" % instance.name)
 			instance.queue_free()
 			continue
 		parent.add_child(instance)
+	return valid
 
 
-func _place_farm_grid(config: Dictionary) -> void:
+func _place_farm_grid(config: Dictionary) -> bool:
 	var farm_root := get_node_or_null(str(config.get("parent", "Farm")))
 	if farm_root == null:
 		push_error("Farm grid placement parent missing")
-		return
+		return false
 	var rows := int(config.get("rows", 0))
 	var columns := int(config.get("columns", 0))
 	var spacing := _array_to_vector3(config.get("spacing", [0.0, 0.0, 0.0]))
 	var origin := _array_to_vector3(config.get("origin", [0.0, 0.0, 0.0]))
 	var id_prefix := str(config.get("id_prefix", "farm"))
+	if rows <= 0 or columns <= 0 or spacing.x <= 0.0 or spacing.z <= 0.0:
+		push_error("Farm grid placement data invalid")
+		return false
 	for row in range(rows):
 		for column in range(columns):
 			var plot := FARM_PLOT_SCENE.instantiate() as GrowWiseFarmPlot
 			plot.plot_id = "%s_%02d_%02d" % [id_prefix, column, row]
 			plot.position = origin + Vector3(column * spacing.x, 0.0, row * spacing.z)
 			farm_root.add_child(plot)
+	return farm_root.get_child_count() == rows * columns
 
 
 func _array_to_vector3(value: Variant) -> Vector3:

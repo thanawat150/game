@@ -30,6 +30,7 @@ var current_target: Vector3 = Vector3.ZERO
 var failure_reason: String = ""
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity", 9.8)
 var talk_target: Node3D
+var navigation_retry_exhausted: bool = false
 
 
 func _ready() -> void:
@@ -41,6 +42,9 @@ func _ready() -> void:
 	navigation_agent.neighbor_distance = 2.2
 	navigation_agent.max_neighbors = 8
 	navigation_agent.velocity_computed.connect(_on_safe_velocity_computed)
+	var navigation_region := get_node_or_null("../../Navigation")
+	if navigation_region != null and navigation_region.has_signal("navigation_ready"):
+		navigation_region.navigation_ready.connect(_on_navigation_ready)
 	current_wait_duration = maxf(start_delay, 0.1)
 	_set_state(NPCState.WAIT)
 
@@ -60,6 +64,8 @@ func _physics_process(delta: float) -> void:
 
 
 func request_path_with_retry(target: Vector3) -> void:
+	if navigation_retry_exhausted:
+		return
 	current_target = target
 	path_elapsed = 0.0
 	failure_reason = ""
@@ -185,9 +191,10 @@ func _update_wait(delta: float) -> void:
 		return
 	if retry_count >= max_path_retries:
 		if failure_reason == "navigation_map_not_ready":
-			retry_count = 0
-			current_wait_duration = wait_timeout
-			request_path_with_retry(current_target)
+			navigation_retry_exhausted = true
+			failure_reason = "navigation_map_timeout"
+			current_wait_duration = INF
+			push_warning("NPC_NAVIGATION_TIMEOUT npc=%s retries=%d" % [npc_id, retry_count])
 			return
 		retry_count = 0
 		failure_reason = "bounded_retry_exhausted"
@@ -232,6 +239,19 @@ func _apply_gravity(delta: float) -> void:
 func _on_safe_velocity_computed(safe_velocity: Vector3) -> void:
 	velocity.x = safe_velocity.x
 	velocity.z = safe_velocity.z
+
+
+func _on_navigation_ready() -> void:
+	if not navigation_retry_exhausted:
+		return
+	navigation_retry_exhausted = false
+	retry_count = 0
+	wait_elapsed = 0.0
+	failure_reason = ""
+	var resume_target := current_target
+	if resume_target == Vector3.ZERO and not patrol_points.is_empty():
+		resume_target = patrol_points[patrol_index]
+	request_path_with_retry(resume_target)
 
 
 func _set_state(next_state: NPCState) -> void:

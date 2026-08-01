@@ -31,7 +31,7 @@ jobs:
       - name: Import GrowWise3D
         shell: bash
         run: |
-          set -o pipefail
+          set -euo pipefail
           "$GODOT" --headless --editor --path GrowWise3D --import --quit 2>&1 | tee growwise3d-import.log
           ! grep -E "SCRIPT ERROR|Parse Error|Compile Error|Failed to load script" growwise3d-import.log
 
