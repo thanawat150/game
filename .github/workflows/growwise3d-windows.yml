@@ -38,7 +38,7 @@ jobs:
       - name: Run component contracts and M1 structural smoke
         shell: bash
         run: |
-          set -o pipefail
+          set -euo pipefail
           : > growwise3d-m1-smoke.log
           tests=(player_contract_test camera_contract_test world_contract_test time_of_day_contract_test farm_plot_contract_test interaction_los_test npc_navigation_contract_test hud_contract_test save_manager_contract_test runtime_marker_contract_test release_pipeline_contract_test m1_smoke_test)
           for test in "${tests[@]}"; do
