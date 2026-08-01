@@ -40,6 +40,8 @@ The slice is complete when the player can walk and sprint around a collision-saf
 
 Each system has one responsibility. Actors expose state through typed methods and signals; UI observes signals and does not mutate domain data directly. Interactables expose an action label, priority, interaction point, and `interact(actor)` contract. SaveManager receives snapshots from registered providers and restores them with defaults.
 
+Major world objects are reusable `.tscn` scenes. `world_bootstrap.gd` may only read placement data, instantiate PackedScenes, assign IDs/configuration, and attach instances to their owned roots. It must not generate the world's primary geometry, collision shapes, materials, navigation behavior, or gameplay logic.
+
 Collision layers are standardized as: 1 World Static, 2 Player, 3 NPC, 4 Interactable, 5 Vehicle, 6 Water, and 7 Trigger. Player and NPC physical masks exclude inappropriate trigger-only shapes. Interactable detection uses areas rather than allowing each object to own the global input action.
 
 ## Components
@@ -56,19 +58,19 @@ The camera rig follows the player in process timing after physics movement and s
 
 ### World and Lighting
 
-The prototype world uses realistically proportioned reusable meshes, layered geometry, and restrained PBR-style materials with plausible albedo, roughness, and metallic values. Terrain variation, raised plot edges, structural thickness, contact shadows, and non-coplanar placement prevent the flat or floating appearance of the scaffold. Large props receive shape-appropriate collision; small decorative props do not. Plot borders remain collidable so actors walk around them. The NavigationRegion3D owns a navigation mesh configured for actor radius and obstacles. Static farm composition remains data-driven in `world_bootstrap.gd` until dedicated production scenes replace placeholders.
+The prototype world uses realistically proportioned reusable `.tscn` scenes, layered geometry, and restrained PBR-style materials with plausible albedo, roughness, and metallic values. Terrain variation, raised plot edges, structural thickness, contact shadows, and non-coplanar placement prevent the flat or floating appearance of the scaffold. Large props receive shape-appropriate collision; small decorative props do not. Plot borders remain collidable so actors walk around them. The NavigationRegion3D owns a navigation mesh configured for actor radius and obstacles. Placement remains data-driven in `world_bootstrap.gd`; geometry, collision, materials, and behavior remain owned by focused scenes/scripts.
 
 Time-of-day presets are Morning, Day, Evening, and Night. They change sun rotation/color/energy, sky contribution, ambient light, background, subtle fog, tonemapping, and exposure as a coordinated physically plausible profile. Shadows remain soft but directional, highlights retain detail, and night remains navigable without glowing materials. A debug action cycles presets.
 
 ### NPCs
 
-`NPCBase.tscn` includes NavigationAgent3D, collision, ModelRoot, AnimationPlayer, and InteractionArea. `npc_controller.gd` owns `IDLE`, `WALK`, `WAIT`, `TALK`, `WORK`, and `RETURN`. Each NPC receives unique identity, dialogue, route, start delay, wait duration, and movement phase. Avoidance and distinct spawn/route timing prevent lockstep and prolonged overlap.
+`NPCBase.tscn` includes NavigationAgent3D, collision, ModelRoot, AnimationPlayer, and InteractionArea. `npc_controller.gd` owns `IDLE`, `WALK`, `WAIT`, `TALK`, `WORK`, and `RETURN`. Each NPC receives unique identity, dialogue, route, start delay, wait duration, and movement phase. Avoidance and distinct spawn/route timing prevent lockstep and prolonged overlap. Path requests use a bounded retry count and retry interval, then enter WAIT with a timeout and human-readable diagnostic before resuming or advancing safely. An unreachable NPC is never teleported.
 
 When selected by InteractionManager, an NPC stops navigation, faces the player, emits its placeholder dialogue, waits for the interaction to finish, then resumes the saved schedule step.
 
 ### Interaction
 
-`interactable_3d.gd` defines the contract. `interaction_manager.gd` collects candidates from the player's InteractionArea, filters disabled/unreachable targets, and selects the best candidate by distance and priority. It emits prompt and target changes. Only the manager reads the interact action, and it ignores input while a menu or interaction lock is active.
+`interactable_3d.gd` defines the contract. `interaction_manager.gd` collects candidates from the player's InteractionArea, filters disabled/unreachable targets, and selects the best candidate by distance and priority. A physics ray query from the player interaction origin to the target interaction point must confirm line of sight against World Static collision before the prompt or action is available; walls, houses, fences, and other large obstacles block interaction. It emits prompt and target changes. Only the manager reads the interact action, and it ignores input while a menu or interaction lock is active.
 
 Plots highlight and emit a plot snapshot. NPCs emit dialogue. The well and shed return placeholder informational messages. This keeps future action execution separate from target selection.
 
@@ -84,7 +86,7 @@ Diagnostics toggles independently and reports player transform/velocity/state, c
 
 ### Save
 
-SaveManager writes an envelope with version and sections for player, camera, selected plot, NPCs, and time of day. Vector3 values are arrays. Loading missing fields applies defaults. Missing save returns a nonfatal result. Invalid JSON is renamed to a timestamped `.corrupt.bak` before defaults are restored. A save version newer than 2 is rejected without overwriting the file.
+SaveManager writes an envelope with version and sections for player, camera, selected plot, NPCs, and time of day. Vector3 values are arrays. It validates the complete JSON envelope before promotion. A write goes to a temporary file, is read back and validated, then preserves the last known-good save as a valid backup before atomically promoting the temporary file. Loading missing fields applies defaults. Missing save returns a nonfatal result. Invalid primary JSON is preserved as a timestamped `.corrupt.bak`; recovery uses only a validated backup and never deletes or overwrites the latest known-good save. A save version newer than 2 is rejected without overwriting any file.
 
 ## Data Flow
 
@@ -111,12 +113,13 @@ SaveManager writes an envelope with version and sections for player, camera, sel
 Automated verification covers:
 
 - Godot 4.6.3 headless import and main-scene load.
-- Runtime smoke with all eight required markers.
+- Runtime smoke with all eight required markers plus direct assertions of node types, node counts, unique IDs, important property values, and the resolved save path.
 - GDScript parse errors and missing resources.
 - Player, CameraRig, NavigationRegion3D, three NPCs, and 24 plots.
 - Interaction prompt and plot selection via deterministic smoke hooks.
 - Save path/version, missing-file behavior, round trip, defaults, and corrupt JSON backup in an isolated test user-data directory.
 - Windows x86-64 export, README, checksum, and uniquely named artifact.
+- Automated screenshots for Morning, Day, Evening, Night, selected plot, and NPC overview. They are labeled machine-generated diagnostic artifacts and are never reported as Manual Visual Test evidence.
 - Git diff checks confirming no changes under `GrowWise/`, `WorldForge/`, or `WorldForge.Godot/`.
 
 Manual verification records only observed results at 720p and 1080p, movement, collision, camera, NPC routes, interaction, save/load, and visual quality. The checklist remains unticked and states `MANUAL_VISUAL_TEST_PENDING` for any unperformed item, including the 30-minute run.
