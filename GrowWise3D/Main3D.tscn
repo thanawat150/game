@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/core/game_root.gd" id="1_root"]
 [ext_resource type="Script" path="res://scripts/world/world_bootstrap.gd" id="2_world"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://scripts/camera/camera_rig.gd" id="5_camera"]
 [ext_resource type="Script" path="res://scripts/world/time_of_day_controller.gd" id="6_time"]
 [ext_resource type="Script" path="res://scripts/interaction/interaction_manager.gd" id="7_interaction"]
+[ext_resource type="Script" path="res://scripts/world/navigation_baker.gd" id="8_navigation"]
 
 [sub_resource type="Environment" id="Environment_main"]
 background_mode = 1
@@ -18,6 +19,15 @@ tonemap_mode = 2
 fog_enabled = true
 fog_light_color = Color(0.68, 0.73, 0.75, 1)
 fog_density = 0.0018
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_m1"]
+agent_height = 2.0
+agent_radius = 0.5
+agent_max_climb = 0.25
+agent_max_slope = 45.0
+cell_size = 0.25
+cell_height = 0.25
+geometry_parsed_geometry_type = 1
 
 [node name="GameRoot" type="Node3D"]
 script = ExtResource("1_root")
@@ -39,7 +49,9 @@ directional_shadow_max_distance = 70.0
 
 [node name="Terrain" parent="World3D" instance=ExtResource("3_terrain")]
 
-[node name="Navigation" type="Node3D" parent="World3D"]
+[node name="Navigation" type="NavigationRegion3D" parent="World3D"]
+navigation_mesh = SubResource("NavigationMesh_m1")
+script = ExtResource("8_navigation")
 
 [node name="Buildings" type="Node3D" parent="World3D"]
 

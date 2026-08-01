@@ -10,6 +10,7 @@ const SCENES: Dictionary[String, String] = {
 	"fence": "res://scenes/world/FenceSection.tscn",
 	"tree": "res://scenes/world/Tree.tscn",
 	"rock": "res://scenes/world/Rock.tscn",
+	"npc": "res://scenes/npc/NPCBase.tscn",
 }
 
 
@@ -41,6 +42,13 @@ func _place_world_instances() -> void:
 		instance.name = str(entry.get("name", scene_id)).validate_node_name()
 		instance.position = _array_to_vector3(entry.get("position", [0.0, 0.0, 0.0]))
 		instance.rotation_degrees.y = float(entry.get("rotation_y", 0.0))
+		for property_name: String in entry.get("properties", {}):
+			instance.set(property_name, entry["properties"][property_name])
+		if entry.has("route") and instance is GrowWiseNPCController:
+			var route: Array[Vector3] = []
+			for point in entry["route"]:
+				route.append(_array_to_vector3(point))
+			instance.set("patrol_points", route)
 		var parent := get_node_or_null(str(entry.get("parent", "Props")))
 		if parent == null:
 			push_warning("Placement parent missing for %s" % instance.name)
