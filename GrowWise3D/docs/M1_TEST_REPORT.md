@@ -34,10 +34,12 @@ The test failed for the intended missing M1 requirements: composed `World3D` own
 
 ## Automated Test Status
 
-- Godot import: baseline passed.
-- Scaffold runtime: baseline passed.
-- M1 structural smoke: expected RED before implementation.
-- Windows export: pending.
+- Godot 4.6.3 import: exit code 0 after implementation.
+- Runtime smoke: exit code 0 with all eight required markers.
+- M1 structural smoke: exit code 0 with `GROWWISE3D_M1_TESTS_OK`.
+- Component contracts: Player, Camera, World ownership, time presets, FarmPlot, interaction LOS, NPC/navigation, HUD, Save, runtime markers, and release pipeline passed locally.
+- Automated screenshots: six PNG files generated locally; explicitly not a Manual Visual Test.
+- Windows export: pending matching local export templates or GitHub Actions.
 - Legacy workflows: pending CI; legacy files remain unmodified.
 
 ## Manual Test Status
@@ -45,3 +47,22 @@ The test failed for the intended missing M1 requirements: composed `World3D` own
 `MANUAL_VISUAL_TEST_PENDING`
 
 No M1 visual quality, resolution, interaction, navigation, save/load, or 30-minute stability claim has been made.
+
+## Runtime Markers Observed
+
+- `GROWWISE3D_SCAFFOLD_OK`
+- `GROWWISE3D_WORLD_SCAFFOLD_OK`
+- `GROWWISE3D_PLAYER_OK`
+- `GROWWISE3D_CAMERA_OK`
+- `GROWWISE3D_NAVIGATION_OK`
+- `GROWWISE3D_NPC_OK`
+- `GROWWISE3D_INTERACTION_OK`
+- `GROWWISE3D_M1_FOUNDATION_OK`
+
+## Known Issues
+
+- Visuals are realistically proportioned procedural prototypes, not final photorealistic production assets.
+- Automated screenshots show the debug panel occupying excessive vertical space; responsive structure is present but manual layout tuning remains required.
+- Navigation is baked from static collision at runtime. Runtime and contract checks pass, but NPC obstacle avoidance and overlap duration still need manual observation.
+- Player movement, camera feel, interactions, save/load UI flow, Thai glyph quality, and 30-minute stability have not been manually verified.
+- Local Windows export was not run because matching Godot 4.6.3 export templates are not installed; the dedicated workflow installs them in CI.

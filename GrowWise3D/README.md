@@ -1,12 +1,12 @@
-# GrowWise 3D Open World v2 — Scaffold
+# GrowWise 3D Open World v2 — M1 Playable Foundation
 
 โครงโปรเจกต์ใหม่สำหรับย้าย GrowWise จากระบบ 2D/ภาพ 3D ซ้อน ไปเป็นเกม 3D จริงใน Godot 4.6.3 โดยแยกจาก `GrowWise/` เดิมเพื่อป้องกันระบบปัจจุบันเสียหาย
 
 ## สถานะ
 
 - เปิดเป็น Godot Project แยกได้จากโฟลเดอร์ `GrowWise3D/`
-- มี Main3D, Player 3D, Isometric Camera, Ground, Farm Plot และ NPC เคลื่อนที่ขั้นต้น
-- ยังเป็น Technical Scaffold ไม่ใช่งานภาพสุดท้าย
+- มีโลก Node3D แบบ scene-first, Player CharacterBody3D, กล้อง Isometric, NavigationRegion3D, NPC 3 คน, FarmPlot 24 ช่อง, Interaction, HUD และ Save v2
+- งานภาพเป็น realistic procedural prototype ที่วางขอบเขตสำหรับเปลี่ยนเป็น production GLB/PBR ภายหลัง
 - ห้าม Merge เข้า `main` จนผ่าน Acceptance Criteria ใน `docs/06_QA_ACCEPTANCE.md`
 
 ## วิธีเปิด
@@ -17,10 +17,23 @@
 
 ## การควบคุม
 
-- WASD: เดิน
+- WASD / ลูกศร: เดิน
 - Shift: วิ่ง
+- E: โต้ตอบ
 - Mouse Wheel: Zoom
+- R: คืนมุมกล้อง
+- T: สลับ Morning / Day / Evening / Night
+- F3: เปิด–ปิด Diagnostics
+- F5: Save
+- F9: Load
 - ESC: ออก
+
+## Save
+
+- Version: `2`
+- Path: `user://growwise3d_save_v2.json`
+- แยกจาก Save ของ GrowWise เดิม
+- ใช้ temporary write, JSON/schema validation, valid backup และ corrupt recovery
 
 ## เป้าหมาย Vertical Slice
 
@@ -58,9 +71,6 @@ GrowWise3D/
 ## งานถัดไป
 
 - เปลี่ยนโมเดล placeholder เป็น GLB พร้อม AnimationTree
-- เพิ่ม NavigationRegion3D และ NavigationAgent3D
-- เพิ่ม Interaction System
+- เพิ่ม Farming Actions ที่มีการเดินไป Work Point และ Animation Event ก่อนเปลี่ยนข้อมูล
 - เชื่อมข้อมูลพืช/คลัง/เวลา/อากาศจากเกมเดิม
-- เพิ่ม SaveManager v2
-- เพิ่ม HUD Responsive
-- เพิ่ม CI Import + Runtime + Windows Export
+- เปลี่ยน procedural prototype เป็น production assets และปรับ HUD จากผล manual QA

@@ -35,8 +35,8 @@ func validate_foundation() -> bool:
 		return false
 	if get_node_or_null("CanvasLayer/UI") == null:
 		return false
-	var plots := get_tree().get_nodes_in_group("growwise_plot")
-	var npcs := get_tree().get_nodes_in_group("growwise_npc")
+	var plots := get_node("World3D/Farm").get_children()
+	var npcs := get_node("World3D/NPCs").get_children()
 	if plots.size() != 24 or npcs.size() != 3:
 		return false
 	return _ids_are_unique(plots, "plot_id") and _ids_are_unique(npcs, "npc_id")
@@ -48,7 +48,7 @@ func _announce_validated_systems() -> void:
 		print("GROWWISE3D_PLAYER_OK")
 	if _has_camera_contract():
 		print("GROWWISE3D_CAMERA_OK")
-	var npcs := get_tree().get_nodes_in_group("growwise_npc")
+	var npcs := get_node("World3D/NPCs").get_children()
 	if npcs.size() == 3 and _ids_are_unique(npcs, "npc_id"):
 		print("GROWWISE3D_NPC_OK")
 	if get_node_or_null("Systems/InteractionManager") != null:
