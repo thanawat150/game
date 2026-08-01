@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scripts/core/game_root.gd" id="1_root"]
 [ext_resource type="Script" path="res://scripts/world/world_bootstrap.gd" id="2_world"]
@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://scripts/world/navigation_baker.gd" id="8_navigation"]
 [ext_resource type="Script" path="res://scripts/debug/diagnostics.gd" id="9_diagnostics"]
 [ext_resource type="PackedScene" path="res://scenes/ui/HUD.tscn" id="10_hud"]
+[ext_resource type="Script" path="res://scripts/save/save_manager.gd" id="11_save"]
 
 [sub_resource type="Environment" id="Environment_main"]
 background_mode = 1
@@ -97,6 +98,9 @@ script = ExtResource("7_interaction")
 
 [node name="Diagnostics" type="Node" parent="Systems"]
 script = ExtResource("9_diagnostics")
+
+[node name="SaveManager" type="Node" parent="Systems"]
+script = ExtResource("11_save")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
