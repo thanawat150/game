@@ -15,20 +15,25 @@ const SCENES: Dictionary[String, String] = {
 
 
 func _ready() -> void:
-	_place_world_instances()
-	_place_farm_grid()
+	var placement_data := _read_placement_data()
+	_place_world_instances(placement_data)
+	_place_farm_grid(placement_data.get("farm_grid", {}))
 	print("GROWWISE3D_WORLD_SCAFFOLD_OK")
 
 
-func _place_world_instances() -> void:
+func _read_placement_data() -> Dictionary:
 	var file := FileAccess.open(PLACEMENT_PATH, FileAccess.READ)
 	if file == null:
 		push_error("GrowWise3D placement data missing: %s" % PLACEMENT_PATH)
-		return
+		return {}
 	var parsed: Variant = JSON.parse_string(file.get_as_text())
 	if not parsed is Dictionary:
 		push_error("GrowWise3D placement data must be a JSON object")
-		return
+		return {}
+	return parsed
+
+
+func _place_world_instances(parsed: Dictionary) -> void:
 	for entry: Dictionary in parsed.get("instances", []):
 		var scene_id := str(entry.get("scene", ""))
 		if not SCENES.has(scene_id):
@@ -57,13 +62,21 @@ func _place_world_instances() -> void:
 		parent.add_child(instance)
 
 
-func _place_farm_grid() -> void:
-	var farm_root := get_node("Farm")
-	for row in range(4):
-		for column in range(6):
+func _place_farm_grid(config: Dictionary) -> void:
+	var farm_root := get_node_or_null(str(config.get("parent", "Farm")))
+	if farm_root == null:
+		push_error("Farm grid placement parent missing")
+		return
+	var rows := int(config.get("rows", 0))
+	var columns := int(config.get("columns", 0))
+	var spacing := _array_to_vector3(config.get("spacing", [0.0, 0.0, 0.0]))
+	var origin := _array_to_vector3(config.get("origin", [0.0, 0.0, 0.0]))
+	var id_prefix := str(config.get("id_prefix", "farm"))
+	for row in range(rows):
+		for column in range(columns):
 			var plot := FARM_PLOT_SCENE.instantiate() as GrowWiseFarmPlot
-			plot.plot_id = "farm_%02d_%02d" % [column, row]
-			plot.position = Vector3((column - 2.5) * 2.35, 0.14, (row - 1.5) * 2.35)
+			plot.plot_id = "%s_%02d_%02d" % [id_prefix, column, row]
+			plot.position = origin + Vector3(column * spacing.x, 0.0, row * spacing.z)
 			farm_root.add_child(plot)
 
 

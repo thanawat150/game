@@ -35,11 +35,19 @@ jobs:
           "$GODOT" --headless --editor --path GrowWise3D --import --quit 2>&1 | tee growwise3d-import.log
           ! grep -E "SCRIPT ERROR|Parse Error|Compile Error|Failed to load script" growwise3d-import.log
 
-      - name: Run M1 structural smoke
+      - name: Run component contracts and M1 structural smoke
         shell: bash
         run: |
           set -o pipefail
-          "$GODOT" --headless --path GrowWise3D --script res://scripts/tests/m1_smoke_test.gd 2>&1 | tee growwise3d-m1-smoke.log
+          : > growwise3d-m1-smoke.log
+          tests=(player_contract_test camera_contract_test world_contract_test time_of_day_contract_test farm_plot_contract_test interaction_los_test npc_navigation_contract_test hud_contract_test save_manager_contract_test runtime_marker_contract_test release_pipeline_contract_test m1_smoke_test)
+          for test in "${tests[@]}"; do
+            args=(--headless --path GrowWise3D --script "res://scripts/tests/$test.gd")
+            if [[ "$test" == "save_manager_contract_test" ]]; then
+              args+=(--user-data-dir "$RUNNER_TEMP/growwise3d-save-contract")
+            fi
+            "$GODOT" "${args[@]}" 2>&1 | tee -a growwise3d-m1-smoke.log
+          done
           grep -q "GROWWISE3D_M1_TESTS_OK" growwise3d-m1-smoke.log
           for marker in GROWWISE3D_SCAFFOLD_OK GROWWISE3D_WORLD_SCAFFOLD_OK GROWWISE3D_PLAYER_OK GROWWISE3D_CAMERA_OK GROWWISE3D_NAVIGATION_OK GROWWISE3D_NPC_OK GROWWISE3D_INTERACTION_OK GROWWISE3D_M1_FOUNDATION_OK; do
             grep -q "$marker" growwise3d-m1-smoke.log

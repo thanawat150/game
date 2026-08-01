@@ -1,4 +1,5 @@
 {
+  "farm_grid": {"scene":"farm_plot","parent":"Farm","rows":4,"columns":6,"spacing":[2.35,0,2.35],"origin":[-5.875,0.14,-3.525],"id_prefix":"farm"},
   "instances": [
     {"scene":"player_house","name":"PlayerHouse","parent":"Buildings","position":[-12,0,-8],"rotation_y":12},
     {"scene":"storage_shed","name":"StorageShed","parent":"Buildings","position":[11,0,-7],"rotation_y":-8},

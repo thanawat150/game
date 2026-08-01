@@ -40,6 +40,7 @@ func _ready() -> void:
 	navigation_agent.radius = 0.42
 	navigation_agent.neighbor_distance = 2.2
 	navigation_agent.max_neighbors = 8
+	navigation_agent.velocity_computed.connect(_on_safe_velocity_computed)
 	current_wait_duration = maxf(start_delay, 0.1)
 	_set_state(NPCState.WAIT)
 
@@ -62,6 +63,9 @@ func request_path_with_retry(target: Vector3) -> void:
 	current_target = target
 	path_elapsed = 0.0
 	failure_reason = ""
+	if NavigationServer3D.map_get_iteration_id(navigation_agent.get_navigation_map()) <= 0:
+		_handle_path_failure("navigation_map_not_ready")
+		return
 	navigation_agent.target_position = target
 	_set_state(NPCState.WALK)
 
@@ -153,9 +157,12 @@ func _update_navigation(delta: float) -> void:
 	if direction.is_zero_approx():
 		_stop_planar(delta)
 		return
-	velocity.x = direction.x * move_speed
-	velocity.z = direction.z * move_speed
-	navigation_agent.velocity = Vector3(velocity.x, 0.0, velocity.z)
+	var desired_velocity := direction * move_speed
+	if navigation_agent.avoidance_enabled:
+		navigation_agent.velocity = desired_velocity
+	else:
+		velocity.x = desired_velocity.x
+		velocity.z = desired_velocity.z
 	rotation.y = lerp_angle(rotation.y, atan2(direction.x, direction.z), clampf(rotation_speed * delta, 0.0, 1.0))
 
 
@@ -177,6 +184,11 @@ func _update_wait(delta: float) -> void:
 		request_path_with_retry(current_target)
 		return
 	if retry_count >= max_path_retries:
+		if failure_reason == "navigation_map_not_ready":
+			retry_count = 0
+			current_wait_duration = wait_timeout
+			request_path_with_retry(current_target)
+			return
 		retry_count = 0
 		failure_reason = "bounded_retry_exhausted"
 		patrol_index = (patrol_index + 1) % maxi(patrol_points.size(), 1)
@@ -215,6 +227,11 @@ func _apply_gravity(delta: float) -> void:
 		velocity.y -= gravity * delta
 	else:
 		velocity.y = -0.1
+
+
+func _on_safe_velocity_computed(safe_velocity: Vector3) -> void:
+	velocity.x = safe_velocity.x
+	velocity.z = safe_velocity.z
 
 
 func _set_state(next_state: NPCState) -> void:

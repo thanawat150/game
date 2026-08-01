@@ -172,9 +172,13 @@ func _read_validated(path: String, allow_future_check: bool = false) -> Dictiona
 		_validation_error = "unsupported_version"
 		return {}
 	for section in ["player", "camera", "world", "systems"]:
-		if not parsed.get(section, null) is Dictionary:
+		if parsed.has(section) and not parsed[section] is Dictionary:
 			_validation_error = "invalid_section_%s" % section
 			return {}
+	var defaults := _default_snapshot()
+	for section in ["player", "camera", "world", "systems"]:
+		if not parsed.has(section):
+			parsed[section] = defaults[section].duplicate(true)
 	return parsed
 
 
@@ -186,13 +190,16 @@ func _copy_validated(source: String, destination: String) -> Error:
 	var error := _write_text(temporary, JSON.stringify(source_data, "  "))
 	if error != OK or _read_validated(temporary).is_empty():
 		return ERR_INVALID_DATA if error == OK else error
-	if FileAccess.file_exists(destination):
-		DirAccess.remove_absolute(ProjectSettings.globalize_path(destination))
-	return DirAccess.rename_absolute(ProjectSettings.globalize_path(temporary), ProjectSettings.globalize_path(destination))
+	return _promote_temporary(temporary, destination)
 
 
 func _promote_temporary(temporary: String, destination: String) -> Error:
 	var previous := destination + ".previous"
+	if FileAccess.file_exists(previous) and not _read_validated(previous).is_empty():
+		if FileAccess.file_exists(destination) and not _read_validated(destination).is_empty():
+			DirAccess.remove_absolute(ProjectSettings.globalize_path(previous))
+		else:
+			return ERR_ALREADY_EXISTS
 	if FileAccess.file_exists(previous):
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(previous))
 	if FileAccess.file_exists(destination):
@@ -205,6 +212,9 @@ func _promote_temporary(temporary: String, destination: String) -> Error:
 			DirAccess.rename_absolute(ProjectSettings.globalize_path(previous), ProjectSettings.globalize_path(destination))
 		return promote_error
 	if _read_validated(destination).is_empty():
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(destination))
+		if FileAccess.file_exists(previous):
+			DirAccess.rename_absolute(ProjectSettings.globalize_path(previous), ProjectSettings.globalize_path(destination))
 		return ERR_INVALID_DATA
 	if FileAccess.file_exists(previous):
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(previous))

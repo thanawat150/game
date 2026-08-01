@@ -23,6 +23,8 @@ func _run() -> void:
 	_expect_numeric(npc, "wait_timeout", 0.0, false)
 	var source := FileAccess.get_file_as_string("res://scripts/npc/npc_controller.gd").to_lower()
 	_expect(source.find("teleport") == -1, "NPC controller must not contain teleport fallback")
+	_expect(source.find("map_get_iteration_id") != -1, "NPC must wait for navigation map synchronization")
+	_expect(source.find("velocity_computed") != -1, "NPC must apply avoidance safe velocity")
 	var root := MAIN_SCENE.instantiate()
 	get_root().add_child(root)
 	await process_frame

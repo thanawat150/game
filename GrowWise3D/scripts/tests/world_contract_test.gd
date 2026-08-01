@@ -44,6 +44,8 @@ func _initialize() -> void:
 	for token in BOOTSTRAP_FORBIDDEN:
 		_expect(bootstrap.find(token) == -1, "world_bootstrap contains forbidden token %s" % token)
 	_expect(FileAccess.file_exists("res://data/m1_world_placements.json"), "missing placement data")
+	var placement_data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/m1_world_placements.json"))
+	_expect(placement_data.get("farm_grid", null) is Dictionary, "farm grid placement must be data-driven")
 	_finish()
 
 

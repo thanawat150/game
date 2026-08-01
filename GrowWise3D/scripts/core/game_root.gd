@@ -12,8 +12,13 @@ const RUNTIME_MARKERS: Array[String] = [
 	"GROWWISE3D_M1_FOUNDATION_OK",
 ]
 
+var _emitted_markers: Array[String] = []
+
 
 func _ready() -> void:
+	var navigation := get_node_or_null("World3D/Navigation")
+	if navigation != null and navigation.has_signal("navigation_ready"):
+		navigation.navigation_ready.connect(_announce_validated_systems)
 	call_deferred("_announce_validated_systems")
 
 
@@ -23,13 +28,17 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func get_runtime_markers() -> Array[String]:
-	return RUNTIME_MARKERS.duplicate()
+	return _emitted_markers.duplicate()
 
 
 func validate_foundation() -> bool:
 	if not _has_player_contract() or not _has_camera_contract():
 		return false
-	if not get_node_or_null("World3D/Navigation") is NavigationRegion3D:
+	var navigation := get_node_or_null("World3D/Navigation") as NavigationRegion3D
+	if navigation == null or navigation.navigation_mesh == null:
+		return false
+	if not navigation.has_method("get_navigation_diagnostics") \
+		or str(navigation.get_navigation_diagnostics().get("status", "")) != "ready":
 		return false
 	if get_node_or_null("Systems/InteractionManager") == null or get_node_or_null("Systems/SaveManager") == null:
 		return false
@@ -43,20 +52,31 @@ func validate_foundation() -> bool:
 
 
 func _announce_validated_systems() -> void:
-	print("GROWWISE3D_SCAFFOLD_OK")
+	_emit_marker("GROWWISE3D_SCAFFOLD_OK")
+	if get_node_or_null("World3D") is Node3D:
+		_emit_marker("GROWWISE3D_WORLD_SCAFFOLD_OK")
 	if _has_player_contract():
-		print("GROWWISE3D_PLAYER_OK")
+		_emit_marker("GROWWISE3D_PLAYER_OK")
 	if _has_camera_contract():
-		print("GROWWISE3D_CAMERA_OK")
+		_emit_marker("GROWWISE3D_CAMERA_OK")
+	var navigation := get_node_or_null("World3D/Navigation")
+	if navigation != null and navigation.has_method("get_navigation_diagnostics") \
+		and str(navigation.get_navigation_diagnostics().get("status", "")) == "ready":
+		_emit_marker("GROWWISE3D_NAVIGATION_OK")
 	var npcs := get_node("World3D/NPCs").get_children()
 	if npcs.size() == 3 and _ids_are_unique(npcs, "npc_id"):
-		print("GROWWISE3D_NPC_OK")
+		_emit_marker("GROWWISE3D_NPC_OK")
 	if get_node_or_null("Systems/InteractionManager") != null:
-		print("GROWWISE3D_INTERACTION_OK")
+		_emit_marker("GROWWISE3D_INTERACTION_OK")
 	if validate_foundation():
-		print("GROWWISE3D_M1_FOUNDATION_OK")
-	else:
-		push_error("GROWWISE3D_M1_FOUNDATION_FAILED")
+		_emit_marker("GROWWISE3D_M1_FOUNDATION_OK")
+
+
+func _emit_marker(marker: String) -> void:
+	if _emitted_markers.has(marker):
+		return
+	_emitted_markers.append(marker)
+	print(marker)
 
 
 func _has_player_contract() -> bool:

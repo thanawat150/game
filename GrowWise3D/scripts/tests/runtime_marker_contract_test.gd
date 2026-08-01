@@ -16,7 +16,8 @@ const REQUIRED_MARKERS := [
 func _initialize() -> void:
 	var root := MAIN_SCENE.instantiate()
 	get_root().add_child(root)
-	await process_frame
+	for frame in range(10):
+		await process_frame
 	if not root.has_method("validate_foundation") or not root.has_method("get_runtime_markers"):
 		push_error("MARKER_CONTRACT: missing validation interface")
 		quit(1)

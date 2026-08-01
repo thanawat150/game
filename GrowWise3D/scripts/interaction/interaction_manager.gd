@@ -72,7 +72,8 @@ func _refresh_target() -> void:
 		_set_target(null)
 		return
 	var best: Node3D
-	var best_score := INF
+	var best_distance := INF
+	var best_priority := -2147483648
 	for candidate in candidates.duplicate():
 		if not is_instance_valid(candidate) or not candidate.is_inside_tree():
 			candidates.erase(candidate)
@@ -82,9 +83,10 @@ func _refresh_target() -> void:
 		if not has_line_of_sight(player, candidate):
 			continue
 		var priority := int(candidate.get_interaction_priority()) if candidate.has_method("get_interaction_priority") else 0
-		var score := player.global_position.distance_squared_to(candidate.global_position) - float(priority) * 0.01
-		if score < best_score:
-			best_score = score
+		var distance := player.global_position.distance_squared_to(candidate.global_position)
+		if distance < best_distance or (is_equal_approx(distance, best_distance) and priority > best_priority):
+			best_distance = distance
+			best_priority = priority
 			best = candidate
 	_set_target(best)
 

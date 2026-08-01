@@ -37,7 +37,8 @@ func _run() -> void:
 	var root := packed.instantiate()
 	root.name = "GameRoot"
 	get_root().add_child(root)
-	await process_frame
+	for frame in range(10):
+		await process_frame
 	_check_required_nodes(root)
 	_check_counts_and_ids(root)
 	_check_important_properties(root)
@@ -86,6 +87,18 @@ func _check_important_properties(root: Node) -> void:
 		_expect_number_property(camera, "min_zoom", 8.0)
 		_expect_number_property(camera, "max_zoom", 22.0)
 		_expect_number_property(camera, "default_zoom", 14.0)
+	var navigation := root.get_node_or_null("World3D/Navigation") as NavigationRegion3D
+	_expect(navigation != null, "World3D/Navigation must be NavigationRegion3D")
+	if navigation != null:
+		_expect(navigation.navigation_mesh != null, "navigation_mesh must be assigned")
+		_expect(navigation.has_method("get_navigation_diagnostics"), "navigation diagnostics must exist")
+		if navigation.has_method("get_navigation_diagnostics"):
+			_expect(str(navigation.get_navigation_diagnostics().get("status", "")) == "ready", "navigation must finish baking before M1 marker")
+	for npc in root.get_tree().get_nodes_in_group("growwise_npc"):
+		_expect(npc.get_node_or_null("NavigationAgent3D") is NavigationAgent3D, "%s needs NavigationAgent3D" % npc.name)
+		_expect(int(npc.get("max_path_retries")) > 0, "%s needs bounded path retry" % npc.name)
+	for plot in root.find_children("*", "GrowWiseFarmPlot", true, false):
+		_expect(plot.get_node_or_null("WorkPoints") != null and plot.get_node("WorkPoints").get_child_count() == 4, "%s needs 4 work points" % plot.name)
 
 
 func _check_save_path(root: Node) -> void:

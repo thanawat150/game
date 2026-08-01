@@ -33,6 +33,15 @@ func _run() -> void:
 	if not _valid_v2(TEST_PATH + ".bak"):
 		_fail("backup must validate")
 		return
+	var partial := FileAccess.open(TEST_PATH, FileAccess.WRITE)
+	partial.store_string(JSON.stringify({"save_version":2, "player":{"position":[1,0,2]}}))
+	partial.close()
+	if manager.load_game() != OK:
+		_fail("missing optional sections must load with defaults")
+		return
+	if manager.save_game() != OK:
+		_fail("save after missing-section defaults must succeed")
+		return
 	var corrupt := FileAccess.open(TEST_PATH, FileAccess.WRITE)
 	corrupt.store_string("{broken json")
 	corrupt.close()
